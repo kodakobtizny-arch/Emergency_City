@@ -1,5 +1,1057 @@
-Emergency_City/
-├── package.json
-├── server.js
-└── public/
-    └── index.html
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency City RP</title>
+
+<style>
+*{box-sizing:border-box}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,sans-serif;
+    background:#87ceeb;
+}
+
+canvas{
+    display:block;
+}
+
+#ui{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    color:white;
+}
+
+#stats{
+    position:absolute;
+    top:15px;
+    left:15px;
+    padding:14px 18px;
+    background:rgba(0,0,0,.75);
+    border-radius:12px;
+    line-height:1.6;
+    font-size:16px;
+}
+
+#jobs{
+    position:absolute;
+    top:15px;
+    right:15px;
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+    width:350px;
+    justify-content:flex-end;
+}
+
+button{
+    pointer-events:auto;
+    border:0;
+    border-radius:8px;
+    padding:10px 14px;
+    color:white;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button:hover{
+    filter:brightness(1.2);
+}
+
+.civilian{background:#444}
+.police{background:#1455d9}
+.medic{background:#d62828}
+.fire{background:#d35400}
+
+#help{
+    position:absolute;
+    left:15px;
+    bottom:15px;
+    background:rgba(0,0,0,.75);
+    padding:12px 16px;
+    border-radius:10px;
+    line-height:1.5;
+}
+
+#event{
+    display:none;
+    position:absolute;
+    top:90px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(180,20,20,.95);
+    padding:12px 25px;
+    border-radius:10px;
+    font-weight:bold;
+}
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:8px;
+    height:8px;
+    transform:translate(-50%,-50%);
+    border:2px solid white;
+    border-radius:50%;
+}
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+
+    <div id="stats">
+        🏙️ <b>Emergency City RP</b><br>
+        💰 $<span id="money">500</span><br>
+        👤 <span id="job">Civilian</span><br>
+        👥 Hráči: <span id="players">1</span>
+    </div>
+
+    <div id="jobs">
+        <button class="civilian" onclick="setJob('Civilian')">Civilian</button>
+        <button class="police" onclick="setJob('Police')">Police</button>
+        <button class="medic" onclick="setJob('Medic')">Medic</button>
+        <button class="fire" onclick="setJob('Firefighter')">Hasiči</button>
+    </div>
+
+    <div id="event"></div>
+
+    <div id="help">
+        <b>Ovládání</b><br>
+        WASD — pohyb<br>
+        SHIFT — sprint<br>
+        Kliknutí — zamknout myš
+    </div>
+
+    <div id="crosshair"></div>
+
+</div>
+
+<script type="module">
+
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
+
+/* =========================
+   SCÉNA
+========================= */
+
+const scene = new THREE.Scene();
+
+scene.background = new THREE.Color(0x87ceeb);
+
+scene.fog = new THREE.Fog(
+    0x87ceeb,
+    100,
+    600
+);
+
+/* =========================
+   KAMERA
+========================= */
+
+const camera = new THREE.PerspectiveCamera(
+    70,
+    innerWidth / innerHeight,
+    0.1,
+    1000
+);
+
+camera.position.set(0,5,8);
+
+/* =========================
+   RENDERER
+========================= */
+
+const renderer = new THREE.WebGLRenderer({
+    antialias:false
+});
+
+renderer.setSize(
+    innerWidth,
+    innerHeight
+);
+
+renderer.setPixelRatio(
+    Math.min(devicePixelRatio,1.5)
+);
+
+document.body.prepend(
+    renderer.domElement
+);
+
+/* =========================
+   SVĚTLO
+========================= */
+
+const sun = new THREE.DirectionalLight(
+    0xffffff,
+    2
+);
+
+sun.position.set(
+    100,
+    200,
+    100
+);
+
+scene.add(sun);
+
+scene.add(
+    new THREE.HemisphereLight(
+        0xffffff,
+        0x555555,
+        1.5
+    )
+);
+
+/* =========================
+   POMOCNÁ FUNKCE
+========================= */
+
+function createBox(
+    x,
+    y,
+    z,
+    sx,
+    sy,
+    sz,
+    color
+){
+
+    const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(
+            sx,
+            sy,
+            sz
+        ),
+        new THREE.MeshStandardMaterial({
+            color:color
+        })
+    );
+
+    mesh.position.set(
+        x,
+        y,
+        z
+    );
+
+    scene.add(mesh);
+
+    return mesh;
+}
+
+/* =========================
+   ZEM
+========================= */
+
+createBox(
+    0,
+    -0.1,
+    0,
+    700,
+    0.2,
+    700,
+    0x3f913f
+);
+
+/* =========================
+   SILNICE
+========================= */
+
+createBox(
+    0,
+    0.02,
+    0,
+    700,
+    0.05,
+    24,
+    0x292929
+);
+
+createBox(
+    0,
+    0.025,
+    0,
+    24,
+    0.06,
+    700,
+    0x292929
+);
+
+/* =========================
+   ČÁRY NA SILNICI
+========================= */
+
+for(let i=-330;i<=330;i+=18){
+
+    createBox(
+        i,
+        0.07,
+        0,
+        8,
+        0.03,
+        0.6,
+        0xffffff
+    );
+
+    createBox(
+        0,
+        0.07,
+        i,
+        0.6,
+        0.03,
+        8,
+        0xffffff
+    );
+}
+
+/* =========================
+   BUDOVY
+========================= */
+
+const buildingColors=[
+    0x777777,
+    0x888888,
+    0x626262,
+    0x6d7880,
+    0x806d61,
+    0x555555
+];
+
+function createBuilding(
+    x,
+    z,
+    width,
+    depth,
+    height
+){
+
+    const color =
+        buildingColors[
+            Math.floor(
+                Math.random() *
+                buildingColors.length
+            )
+        ];
+
+    createBox(
+        x,
+        height/2,
+        z,
+        width,
+        height,
+        depth,
+        color
+    );
+
+    createBox(
+        x,
+        height+0.15,
+        z,
+        width+0.3,
+        0.3,
+        depth+0.3,
+        0x333333
+    );
+}
+
+for(
+    let x=-270;
+    x<=270;
+    x+=45
+){
+
+    for(
+        let z=-270;
+        z<=270;
+        z+=45
+    ){
+
+        if(
+            Math.abs(x)<40 ||
+            Math.abs(z)<40
+        ){
+            continue;
+        }
+
+        const height =
+            15 + Math.random()*45;
+
+        createBuilding(
+            x + Math.random()*8-4,
+            z + Math.random()*8-4,
+            28,
+            28,
+            height
+        );
+    }
+}
+
+/* =========================
+   STROMY
+========================= */
+
+function createTree(x,z){
+
+    createBox(
+        x,
+        2,
+        z,
+        1.2,
+        4,
+        1.2,
+        0x684321
+    );
+
+    const crown =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                4,
+                8,
+                6
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x176b2a
+            })
+        );
+
+    crown.position.set(
+        x,
+        6,
+        z
+    );
+
+    scene.add(crown);
+}
+
+for(let i=0;i<160;i++){
+
+    const x =
+        Math.random()*600-300;
+
+    const z =
+        Math.random()*600-300;
+
+    if(
+        Math.abs(x)<20 ||
+        Math.abs(z)<20
+    ){
+        continue;
+    }
+
+    createTree(x,z);
+}
+
+/* =========================
+   HRÁČ
+========================= */
+
+const player =
+    new THREE.Group();
+
+const playerBody =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(
+            1.2,
+            2,
+            0.7
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x2266ff
+        })
+    );
+
+playerBody.position.y=1.3;
+
+player.add(playerBody);
+
+const playerHead =
+    new THREE.Mesh(
+        new THREE.SphereGeometry(
+            0.55,
+            12,
+            8
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0xffcc99
+        })
+    );
+
+playerHead.position.y=2.7;
+
+player.add(playerHead);
+
+scene.add(player);
+
+player.position.set(
+    0,
+    0,
+    10
+);
+
+/* =========================
+   OSTATNÍ HRÁČI
+========================= */
+
+const otherPlayers =
+    new Map();
+
+function createOtherPlayer(p){
+
+    if(otherPlayers.has(p.id)){
+        return;
+    }
+
+    const group =
+        new THREE.Group();
+
+    const body =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                1.2,
+                2,
+                0.7
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0xff3333
+            })
+        );
+
+    body.position.y=1.3;
+
+    group.add(body);
+
+    const head =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                0.55,
+                12,
+                8
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0xffcc99
+            })
+        );
+
+    head.position.y=2.7;
+
+    group.add(head);
+
+    scene.add(group);
+
+    otherPlayers.set(
+        p.id,
+        group
+    );
+}
+
+function updatePlayers(list){
+
+    const ids =
+        new Set(
+            list.map(
+                p=>p.id
+            )
+        );
+
+    for(
+        const [id,group]
+        of otherPlayers
+    ){
+
+        if(!ids.has(id)){
+
+            scene.remove(group);
+
+            otherPlayers.delete(id);
+        }
+    }
+
+    for(const p of list){
+
+        if(p.id===myId){
+            continue;
+        }
+
+        createOtherPlayer(p);
+
+        const group =
+            otherPlayers.get(p.id);
+
+        group.position.set(
+            p.x,
+            0,
+            p.z
+        );
+
+        group.rotation.y =
+            p.rot || 0;
+    }
+}
+
+/* =========================
+   OVLÁDÁNÍ
+========================= */
+
+const keys={};
+
+window.addEventListener(
+    "keydown",
+    e=>{
+        keys[
+            e.key.toLowerCase()
+        ]=true;
+
+        if(e.key==="1"){
+            setJob("Civilian");
+        }
+
+        if(e.key==="2"){
+            setJob("Police");
+        }
+
+        if(e.key==="3"){
+            setJob("Medic");
+        }
+
+        if(e.key==="4"){
+            setJob("Firefighter");
+        }
+    }
+);
+
+window.addEventListener(
+    "keyup",
+    e=>{
+        keys[
+            e.key.toLowerCase()
+        ]=false;
+    }
+);
+
+/* =========================
+   MYŠ
+========================= */
+
+let yaw=0;
+
+renderer.domElement.addEventListener(
+    "click",
+    ()=>{
+        renderer.domElement.requestPointerLock();
+    }
+);
+
+document.addEventListener(
+    "mousemove",
+    e=>{
+
+        if(
+            document.pointerLockElement
+        ){
+
+            yaw -=
+                e.movementX * 0.002;
+        }
+    }
+);
+
+/* =========================
+   WEBSOCKET
+========================= */
+
+let socket=null;
+let myId=null;
+
+let myMoney=500;
+let myJob="Civilian";
+
+function connect(){
+
+    const protocol =
+        location.protocol==="https:"
+        ? "wss:"
+        : "ws:";
+
+    socket =
+        new WebSocket(
+            protocol +
+            "//" +
+            location.host
+        );
+
+    socket.onopen=()=>{
+
+        console.log(
+            "Connected to server"
+        );
+    };
+
+    socket.onmessage=e=>{
+
+        try{
+
+            const data =
+                JSON.parse(e.data);
+
+            if(
+                data.type==="welcome"
+            ){
+
+                myId=data.id;
+
+                myMoney =
+                    data.self.cash;
+
+                myJob =
+                    data.self.job;
+
+                updateUI();
+            }
+
+            if(
+                data.type==="state"
+            ){
+
+                updatePlayers(
+                    data.players
+                );
+
+                document.getElementById(
+                    "players"
+                ).textContent =
+                    data.players.length;
+            }
+
+        }catch(error){
+
+            console.log(
+                "Server message error:",
+                error
+            );
+        }
+    };
+
+    socket.onclose=()=>{
+
+        console.log(
+            "Disconnected. Reconnecting..."
+        );
+
+        setTimeout(
+            connect,
+            2000
+        );
+    };
+}
+
+connect();
+
+/* =========================
+   PRÁCE
+========================= */
+
+window.setJob=function(job){
+
+    myJob=job;
+
+    if(
+        socket &&
+        socket.readyState===WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify({
+                type:"job",
+                job:job
+            })
+        );
+    }
+
+    updateUI();
+
+    showEvent(
+        "Nová práce: " + job
+    );
+};
+
+/* =========================
+   PENÍZE
+========================= */
+
+function reward(amount){
+
+    if(
+        socket &&
+        socket.readyState===WebSocket.OPEN
+    ){
+
+        socket.send(
+            JSON.stringify({
+                type:"reward",
+                amount:amount
+            })
+        );
+    }
+
+    myMoney += amount;
+
+    updateUI();
+}
+
+/* =========================
+   UI
+========================= */
+
+function updateUI(){
+
+    document.getElementById(
+        "money"
+    ).textContent =
+        Math.floor(myMoney);
+
+    document.getElementById(
+        "job"
+    ).textContent =
+        myJob;
+}
+
+function showEvent(text){
+
+    const event =
+        document.getElementById(
+            "event"
+        );
+
+    event.textContent=text;
+
+    event.style.display="block";
+
+    setTimeout(
+        ()=>{
+            event.style.display="none";
+        },
+        2500
+    );
+}
+
+/* =========================
+   RANDOM EVENTY
+========================= */
+
+setInterval(()=>{
+
+    const events=[
+        "🚗 Dopravní nehoda!",
+        "🚑 Potřebná sanitka!",
+        "🔥 Požár ve městě!",
+        "🚓 Policejní výzva!",
+        "🚦 Dopravní kolona!"
+    ];
+
+    const event =
+        events[
+            Math.floor(
+                Math.random() *
+                events.length
+            )
+        ];
+
+    showEvent(event);
+
+    if(
+        myJob==="Police" ||
+        myJob==="Medic" ||
+        myJob==="Firefighter"
+    ){
+
+        setTimeout(
+            ()=>{
+
+                reward(100);
+
+                showEvent(
+                    "💰 Výjezd dokončen +$100"
+                );
+
+            },
+            3000
+        );
+    }
+
+},15000);
+
+/* =========================
+   GAME LOOP
+========================= */
+
+const clock =
+    new THREE.Clock();
+
+let lastNetworkUpdate=0;
+
+function animate(){
+
+    requestAnimationFrame(
+        animate
+    );
+
+    const dt =
+        Math.min(
+            clock.getDelta(),
+            0.05
+        );
+
+    let speed =
+        keys["shift"]
+        ? 22
+        : 12;
+
+    let dx=0;
+    let dz=0;
+
+    if(keys["w"]){
+        dz-=1;
+    }
+
+    if(keys["s"]){
+        dz+=1;
+    }
+
+    if(keys["a"]){
+        dx-=1;
+    }
+
+    if(keys["d"]){
+        dx+=1;
+    }
+
+    if(dx!==0 || dz!==0){
+
+        const length =
+            Math.hypot(dx,dz);
+
+        dx/=length;
+        dz/=length;
+
+        const sin =
+            Math.sin(yaw);
+
+        const cos =
+            Math.cos(yaw);
+
+        const moveX =
+            dx*cos - dz*sin;
+
+        const moveZ =
+            dx*sin + dz*cos;
+
+        player.position.x +=
+            moveX * speed * dt;
+
+        player.position.z +=
+            moveZ * speed * dt;
+
+        player.position.x =
+            THREE.MathUtils.clamp(
+                player.position.x,
+                -320,
+                320
+            );
+
+        player.position.z =
+            THREE.MathUtils.clamp(
+                player.position.z,
+                -320,
+                320
+            );
+
+        player.rotation.y =
+            Math.atan2(
+                moveX,
+                moveZ
+            );
+    }
+
+    /* kamera */
+
+    camera.position.x =
+        player.position.x +
+        Math.sin(yaw)*8;
+
+    camera.position.z =
+        player.position.z +
+        Math.cos(yaw)*8;
+
+    camera.position.y=5;
+
+    camera.lookAt(
+        player.position.x,
+        1.5,
+        player.position.z
+    );
+
+    /* server update */
+
+    const now=performance.now();
+
+    if(
+        socket &&
+        socket.readyState===WebSocket.OPEN &&
+        now-lastNetworkUpdate>50
+    ){
+
+        socket.send(
+            JSON.stringify({
+                type:"update",
+                x:player.position.x,
+                z:player.position.z,
+                rot:player.rotation.y
+            })
+        );
+
+        lastNetworkUpdate=now;
+    }
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+animate();
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener(
+    "resize",
+    ()=>{
+
+        camera.aspect =
+            innerWidth /
+            innerHeight;
+
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(
+            innerWidth,
+            innerHeight
+        );
+    }
+);
+
+</script>
+
+</body>
+</html>
