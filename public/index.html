@@ -2,7 +2,7 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Emergency City RP</title>
 
 <style>
@@ -17,9 +17,7 @@ html,body{
     background:#87ceeb;
 }
 
-canvas{
-    display:block;
-}
+canvas{display:block}
 
 #ui{
     position:fixed;
@@ -33,10 +31,12 @@ canvas{
     top:15px;
     left:15px;
     padding:14px 18px;
-    background:rgba(0,0,0,.75);
+    background:rgba(15,18,22,.86);
+    border:1px solid #ffffff22;
     border-radius:12px;
-    line-height:1.6;
-    font-size:16px;
+    line-height:1.55;
+    font-size:15px;
+    box-shadow:0 5px 20px #0008;
 }
 
 #jobs{
@@ -46,34 +46,32 @@ canvas{
     display:flex;
     gap:7px;
     flex-wrap:wrap;
-    width:350px;
+    width:360px;
     justify-content:flex-end;
 }
 
 button{
     pointer-events:auto;
-    border:0;
+    border:1px solid #ffffff22;
     border-radius:8px;
     padding:10px 14px;
     color:white;
     cursor:pointer;
     font-weight:bold;
+    box-shadow:0 3px 10px #0005;
 }
 
-button:hover{
-    filter:brightness(1.2);
-}
-
-.civilian{background:#444}
-.police{background:#1455d9}
-.medic{background:#d62828}
-.fire{background:#d35400}
+button:hover{filter:brightness(1.2)}
+.civilian{background:#34383d}
+.police{background:#174aa8}
+.medic{background:#b51f2a}
+.fire{background:#b74710}
 
 #help{
     position:absolute;
     left:15px;
     bottom:15px;
-    background:rgba(0,0,0,.75);
+    background:rgba(15,18,22,.85);
     padding:12px 16px;
     border-radius:10px;
     line-height:1.5;
@@ -85,21 +83,23 @@ button:hover{
     top:90px;
     left:50%;
     transform:translateX(-50%);
-    background:rgba(180,20,20,.95);
+    background:rgba(160,20,20,.94);
     padding:12px 25px;
     border-radius:10px;
     font-weight:bold;
+    box-shadow:0 4px 20px #0008;
 }
 
 #crosshair{
     position:absolute;
     left:50%;
     top:50%;
-    width:8px;
-    height:8px;
+    width:7px;
+    height:7px;
     transform:translate(-50%,-50%);
     border:2px solid white;
     border-radius:50%;
+    opacity:.8;
 }
 </style>
 </head>
@@ -108,30 +108,30 @@ button:hover{
 
 <div id="ui">
 
-    <div id="stats">
-        🏙️ <b>Emergency City RP</b><br>
-        💰 $<span id="money">500</span><br>
-        👤 <span id="job">Civilian</span><br>
-        👥 Hráči: <span id="players">1</span>
-    </div>
+<div id="stats">
+🏙️ <b>Emergency City RP</b><br>
+💰 $<span id="money">500</span><br>
+👤 <span id="job">Civilian</span><br>
+👥 Hráči: <span id="players">1</span>
+</div>
 
-    <div id="jobs">
-        <button class="civilian" onclick="setJob('Civilian')">Civilian</button>
-        <button class="police" onclick="setJob('Police')">Police</button>
-        <button class="medic" onclick="setJob('Medic')">Medic</button>
-        <button class="fire" onclick="setJob('Firefighter')">Hasiči</button>
-    </div>
+<div id="jobs">
+<button class="civilian" onclick="setJob('Civilian')">Civilian</button>
+<button class="police" onclick="setJob('Police')">Police</button>
+<button class="medic" onclick="setJob('Medic')">Medic</button>
+<button class="fire" onclick="setJob('Firefighter')">Hasiči</button>
+</div>
 
-    <div id="event"></div>
+<div id="event"></div>
 
-    <div id="help">
-        <b>Ovládání</b><br>
-        WASD — pohyb<br>
-        SHIFT — sprint<br>
-        Kliknutí — zamknout myš
-    </div>
+<div id="help">
+<b>Ovládání</b><br>
+W A S D — pohyb<br>
+SHIFT — sprint<br>
+Kliknutí — kamera
+</div>
 
-    <div id="crosshair"></div>
+<div id="crosshair"></div>
 
 </div>
 
@@ -140,39 +140,29 @@ button:hover{
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-/* =========================
+/* =====================================================
    SCÉNA
-========================= */
+===================================================== */
 
 const scene = new THREE.Scene();
 
-scene.background = new THREE.Color(0x87ceeb);
+scene.background = new THREE.Color(0x9bc9e8);
 
 scene.fog = new THREE.Fog(
-    0x87ceeb,
-    100,
-    600
+    0x9bc9e8,
+    180,
+    750
 );
-
-/* =========================
-   KAMERA
-========================= */
 
 const camera = new THREE.PerspectiveCamera(
-    70,
-    innerWidth / innerHeight,
-    0.1,
-    1000
+    68,
+    innerWidth/innerHeight,
+    .1,
+    1200
 );
 
-camera.position.set(0,5,8);
-
-/* =========================
-   RENDERER
-========================= */
-
 const renderer = new THREE.WebGLRenderer({
-    antialias:false
+    antialias:true
 });
 
 renderer.setSize(
@@ -184,166 +174,349 @@ renderer.setPixelRatio(
     Math.min(devicePixelRatio,1.5)
 );
 
-document.body.prepend(
-    renderer.domElement
-);
+renderer.shadowMap.enabled=true;
 
-/* =========================
-   SVĚTLO
-========================= */
+renderer.shadowMap.type=
+    THREE.PCFSoftShadowMap;
 
-const sun = new THREE.DirectionalLight(
-    0xffffff,
-    2
-);
+document.body.prepend(renderer.domElement);
+
+/* =====================================================
+   SVĚTLA
+===================================================== */
+
+const sun =
+    new THREE.DirectionalLight(
+        0xffffff,
+        2.2
+    );
 
 sun.position.set(
-    100,
-    200,
+    150,
+    250,
     100
 );
+
+sun.castShadow=true;
+
+sun.shadow.mapSize.width=1024;
+sun.shadow.mapSize.height=1024;
 
 scene.add(sun);
 
 scene.add(
     new THREE.HemisphereLight(
-        0xffffff,
-        0x555555,
-        1.5
+        0xcfe8ff,
+        0x53604f,
+        1.25
     )
 );
 
-/* =========================
-   POMOCNÁ FUNKCE
-========================= */
+/* =====================================================
+   POMOCNÉ FUNKCE
+===================================================== */
 
-function createBox(
-    x,
-    y,
-    z,
-    sx,
-    sy,
-    sz,
-    color
+function material(color,roughness=.8){
+
+    return new THREE.MeshStandardMaterial({
+        color,
+        roughness
+    });
+}
+
+function cube(
+    x,y,z,
+    sx,sy,sz,
+    color,
+    options={}
 ){
 
-    const mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(
-            sx,
-            sy,
-            sz
-        ),
-        new THREE.MeshStandardMaterial({
-            color:color
-        })
-    );
+    const mesh =
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                sx,sy,sz
+            ),
+            material(
+                color,
+                options.roughness ?? .8
+            )
+        );
 
-    mesh.position.set(
-        x,
-        y,
-        z
-    );
+    mesh.position.set(x,y,z);
+
+    if(options.cast!==false)
+        mesh.castShadow=true;
+
+    if(options.receive!==false)
+        mesh.receiveShadow=true;
 
     scene.add(mesh);
 
     return mesh;
 }
 
-/* =========================
-   ZEM
-========================= */
+function plane(
+    x,y,z,
+    sx,sz,
+    color
+){
 
-createBox(
-    0,
-    -0.1,
-    0,
-    700,
-    0.2,
-    700,
-    0x3f913f
-);
-
-/* =========================
-   SILNICE
-========================= */
-
-createBox(
-    0,
-    0.02,
-    0,
-    700,
-    0.05,
-    24,
-    0x292929
-);
-
-createBox(
-    0,
-    0.025,
-    0,
-    24,
-    0.06,
-    700,
-    0x292929
-);
-
-/* =========================
-   ČÁRY NA SILNICI
-========================= */
-
-for(let i=-330;i<=330;i+=18){
-
-    createBox(
-        i,
-        0.07,
-        0,
-        8,
-        0.03,
-        0.6,
-        0xffffff
-    );
-
-    createBox(
-        0,
-        0.07,
-        i,
-        0.6,
-        0.03,
-        8,
-        0xffffff
+    return cube(
+        x,
+        y,
+        z,
+        sx,
+        .05,
+        sz,
+        color,
+        {cast:false}
     );
 }
 
-/* =========================
-   BUDOVY
-========================= */
+/* =====================================================
+   TERÉN
+===================================================== */
 
-const buildingColors=[
-    0x777777,
-    0x888888,
-    0x626262,
-    0x6d7880,
-    0x806d61,
-    0x555555
+plane(
+    0,
+    -.06,
+    0,
+    720,
+    720,
+    0x536b4e
+);
+
+/* =====================================================
+   SILNICE
+===================================================== */
+
+const ROAD=0x292b2e;
+const SIDEWALK=0x858585;
+
+cube(
+    0,
+    .02,
+    0,
+    720,
+    .08,
+    30,
+    ROAD,
+    {cast:false}
+);
+
+cube(
+    0,
+    .025,
+    0,
+    30,
+    .09,
+    720,
+    ROAD,
+    {cast:false}
+);
+
+/* vedlejší silnice */
+
+for(let x=-300;x<=300;x+=75){
+
+    if(Math.abs(x)<35)continue;
+
+    cube(
+        x,
+        .025,
+        0,
+        14,
+        .08,
+        720,
+        ROAD,
+        {cast:false}
+    );
+}
+
+for(let z=-300;z<=300;z+=75){
+
+    if(Math.abs(z)<35)continue;
+
+    cube(
+        0,
+        .025,
+        z,
+        720,
+        .08,
+        14,
+        ROAD,
+        {cast:false}
+    );
+}
+
+/* =====================================================
+   CHODNÍKY
+===================================================== */
+
+function sidewalkHorizontal(z){
+
+    cube(
+        0,
+        .07,
+        z,
+        720,
+        .12,
+        4,
+        SIDEWALK,
+        {cast:false}
+    );
+}
+
+function sidewalkVertical(x){
+
+    cube(
+        x,
+        .07,
+        0,
+        4,
+        .12,
+        720,
+        SIDEWALK,
+        {cast:false}
+    );
+}
+
+sidewalkHorizontal(17);
+sidewalkHorizontal(-17);
+
+sidewalkVertical(17);
+sidewalkVertical(-17);
+
+for(let x=-300;x<=300;x+=75){
+
+    if(Math.abs(x)<35)continue;
+
+    sidewalkVertical(x-9);
+    sidewalkVertical(x+9);
+}
+
+for(let z=-300;z<=300;z+=75){
+
+    if(Math.abs(z)<35)continue;
+
+    sidewalkHorizontal(z-9);
+    sidewalkHorizontal(z+9);
+}
+
+/* =====================================================
+   SILNIČNÍ ČÁRY
+===================================================== */
+
+function roadLines(){
+
+    for(let i=-350;i<350;i+=14){
+
+        plane(
+            i,
+            .09,
+            0,
+            7,
+            .35,
+            0xe7e7c8
+        );
+
+        plane(
+            0,
+            .095,
+            i,
+            .35,
+            7,
+            0xe7e7c8
+        );
+    }
+}
+
+roadLines();
+
+/* =====================================================
+   BUDOVY
+===================================================== */
+
+const facades=[
+    0x9b9b95,
+    0xb7aaa0,
+    0x7c8588,
+    0xaaa69c,
+    0x8b969a,
+    0xb3b5b0,
+    0x706f70,
+    0xc0b39f
 ];
 
-function createBuilding(
+function windowPanel(
+    x,y,z,
+    w,h,
+    rot="front"
+){
+
+    const glass=
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                w,
+                h,
+                .06
+            ),
+            new THREE.MeshStandardMaterial({
+                color:0x243c4b,
+                roughness:.25,
+                metalness:.15
+            })
+        );
+
+    glass.position.set(
+        x,y,z
+    );
+
+    scene.add(glass);
+
+    if(rot==="front"){
+
+        cube(
+            x-w/2-.03,
+            y,
+            z-.04,
+            .08,
+            h+.1,
+            .08,
+            0x444444
+        );
+
+        cube(
+            x+w/2+.03,
+            y,
+            z-.04,
+            .08,
+            h+.1,
+            .08,
+            0x444444
+        );
+    }
+}
+
+function detailedBuilding(
     x,
     z,
     width,
     depth,
-    height
+    height,
+    floors
 ){
 
     const color =
-        buildingColors[
+        facades[
             Math.floor(
-                Math.random() *
-                buildingColors.length
+                Math.random()*facades.length
             )
         ];
 
-    createBox(
+    /* hlavní budova */
+
+    cube(
         x,
         height/2,
         z,
@@ -353,142 +526,687 @@ function createBuilding(
         color
     );
 
-    createBox(
+    /* střecha */
+
+    cube(
         x,
-        height+0.15,
+        height+.18,
         z,
-        width+0.3,
-        0.3,
-        depth+0.3,
-        0x333333
+        width+.3,
+        .35,
+        depth+.3,
+        0x3d3d3d
+    );
+
+    /* římsy */
+
+    for(let f=1;f<floors;f++){
+
+        const y =
+            (height/floors)*f;
+
+        cube(
+            x,
+            y,
+            z-depth/2-.03,
+            width+.15,
+            .13,
+            .12,
+            0x686868
+        );
+    }
+
+    const floorHeight =
+        height/floors;
+
+    /* přední okna */
+
+    for(
+        let f=0;
+        f<floors;
+        f++
+    ){
+
+        const y =
+            floorHeight*f+
+            floorHeight*.52;
+
+        const columns =
+            Math.max(
+                2,
+                Math.floor(width/7)
+            );
+
+        for(
+            let c=0;
+            c<columns;
+            c++
+        ){
+
+            const spacing =
+                width/(columns+1);
+
+            const wx =
+                x-width/2+
+                spacing*(c+1);
+
+            windowPanel(
+                wx,
+                y,
+                z-depth/2-.07,
+                1.7,
+                1.4
+            );
+        }
+    }
+
+    /* boční okna */
+
+    for(
+        let f=0;
+        f<floors;
+        f++
+    ){
+
+        const y =
+            floorHeight*f+
+            floorHeight*.52;
+
+        const rows =
+            Math.max(
+                2,
+                Math.floor(depth/8)
+            );
+
+        for(
+            let r=0;
+            r<rows;
+            r++
+        ){
+
+            const spacing =
+                depth/(rows+1);
+
+            const wz =
+                z-depth/2+
+                spacing*(r+1);
+
+            const glass=
+                new THREE.Mesh(
+                    new THREE.BoxGeometry(
+                        .06,
+                        1.4,
+                        1.7
+                    ),
+                    new THREE.MeshStandardMaterial({
+                        color:0x263f4c,
+                        roughness:.25
+                    })
+                );
+
+            glass.position.set(
+                x-width/2-.07,
+                y,
+                wz
+            );
+
+            scene.add(glass);
+        }
+    }
+
+    /* vchod */
+
+    cube(
+        x,
+        1.4,
+        z-depth/2-.13,
+        2.4,
+        2.8,
+        .15,
+        0x252b30
+    );
+
+    /* schody */
+
+    cube(
+        x,
+        .18,
+        z-depth/2-.9,
+        3,
+        .25,
+        1.5,
+        0x666666
     );
 }
 
+/* městské bloky */
+
 for(
-    let x=-270;
-    x<=270;
-    x+=45
+    let bx=-300;
+    bx<=300;
+    bx+=75
 ){
 
     for(
-        let z=-270;
-        z<=270;
-        z+=45
+        let bz=-300;
+        bz<=300;
+        bz+=75
     ){
 
         if(
-            Math.abs(x)<40 ||
-            Math.abs(z)<40
-        ){
-            continue;
-        }
+            Math.abs(bx)<40 ||
+            Math.abs(bz)<40
+        ) continue;
+
+        const width =
+            34+
+            Math.random()*12;
+
+        const depth =
+            34+
+            Math.random()*12;
 
         const height =
-            15 + Math.random()*45;
+            16+
+            Math.random()*42;
 
-        createBuilding(
-            x + Math.random()*8-4,
-            z + Math.random()*8-4,
-            28,
-            28,
-            height
+        const floors =
+            Math.max(
+                2,
+                Math.floor(
+                    height/4
+                )
+            );
+
+        detailedBuilding(
+            bx,
+            bz,
+            width,
+            depth,
+            height,
+            floors
         );
     }
 }
 
-/* =========================
-   STROMY
-========================= */
+/* =====================================================
+   PARKOVIŠTĚ
+===================================================== */
 
-function createTree(x,z){
+function parkingLot(x,z,w,d){
 
-    createBox(
+    plane(
         x,
-        2,
+        .11,
         z,
-        1.2,
-        4,
-        1.2,
-        0x684321
+        w,
+        d,
+        0x383a3c
     );
 
-    const crown =
+    for(
+        let px=x-w/2+4;
+        px<x+w/2;
+        px+=5
+    ){
+
+        cube(
+            px,
+            .15,
+            z,
+            .12,
+            .03,
+            d-2,
+            0xe6e6d8,
+            {cast:false}
+        );
+    }
+}
+
+parkingLot(
+    115,
+    0,
+    55,
+    25
+);
+
+parkingLot(
+    -115,
+    0,
+    55,
+    25
+);
+
+parkingLot(
+    0,
+    115,
+    25,
+    55
+);
+
+/* =====================================================
+   AUTA
+===================================================== */
+
+const carColors=[
+    0xb92d2d,
+    0x1e4f91,
+    0xe4e4e4,
+    0x252525,
+    0xd6b42d,
+    0xeeeeee
+];
+
+function createCar(
+    x,z,rotation=0,color
+){
+
+    const car=
+        new THREE.Group();
+
+    const body=
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                2.1,
+                .65,
+                4.2
+            ),
+            material(
+                color ??
+                carColors[
+                    Math.floor(
+                        Math.random()*
+                        carColors.length
+                    )
+                ],
+                .45
+            )
+        );
+
+    body.position.y=.65;
+
+    car.add(body);
+
+    const cabin=
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                1.65,
+                .7,
+                2
+            ),
+            material(
+                0x303c45,
+                .2
+            )
+        );
+
+    cabin.position.set(
+        0,
+        1.12,
+        -.15
+    );
+
+    car.add(cabin);
+
+    /* kola */
+
+    for(
+        const wx of [-1.05,1.05]
+    ){
+
+        for(
+            const wz of [-1.35,1.35]
+        ){
+
+            const wheel=
+                new THREE.Mesh(
+                    new THREE.CylinderGeometry(
+                        .38,
+                        .38,
+                        .22,
+                        12
+                    ),
+                    material(
+                        0x151515
+                    )
+                );
+
+            wheel.rotation.z=
+                Math.PI/2;
+
+            wheel.position.set(
+                wx,
+                .42,
+                wz
+            );
+
+            car.add(wheel);
+        }
+    }
+
+    /* světla */
+
+    cube(
+        0,
+        .7,
+        -2.13,
+        .7,
+        .22,
+        .08,
+        0xff3333
+    ).parent=car;
+
+    cube(
+        0,
+        .7,
+        2.13,
+        .7,
+        .22,
+        .08,
+        0xffffff
+    ).parent=car;
+
+    car.position.set(
+        x,
+        0,
+        z
+    );
+
+    car.rotation.y=
+        rotation;
+
+    scene.add(car);
+}
+
+/* zaparkovaná auta */
+
+const parked=[
+    [112,-4,0],
+    [112,4,0],
+    [118,-4,0],
+    [118,4,0],
+    [-112,-4,Math.PI],
+    [-112,4,Math.PI],
+    [-118,-4,Math.PI],
+    [-118,4,Math.PI],
+    [-4,112,Math.PI/2],
+    [4,112,Math.PI/2],
+    [-4,118,Math.PI/2],
+    [4,118,Math.PI/2]
+];
+
+for(
+    const car of parked
+){
+
+    createCar(
+        car[0],
+        car[1],
+        car[2]
+    );
+}
+
+/* =====================================================
+   POULIČNÍ LAMPY
+===================================================== */
+
+function streetLamp(x,z,rot=0){
+
+    const group=
+        new THREE.Group();
+
+    const pole=
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                .09,
+                .13,
+                6,
+                8
+            ),
+            material(0x292929)
+        );
+
+    pole.position.y=3;
+
+    group.add(pole);
+
+    const arm=
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                1.3,
+                .12,
+                .12
+            ),
+            material(0x292929)
+        );
+
+    arm.position.set(
+        .55,
+        5.65,
+        0
+    );
+
+    group.add(arm);
+
+    const light=
+        new THREE.Mesh(
+            new THREE.BoxGeometry(
+                .65,
+                .12,
+                .3
+            ),
+            material(0xf5e8ad,.3)
+        );
+
+    light.position.set(
+        1.15,
+        5.55,
+        0
+    );
+
+    group.add(light);
+
+    group.position.set(
+        x,
+        0,
+        z
+    );
+
+    group.rotation.y=rot;
+
+    scene.add(group);
+}
+
+for(
+    let i=-300;
+    i<=300;
+    i+=50
+){
+
+    streetLamp(
+        i,
+        13,
+        0
+    );
+
+    streetLamp(
+        i,
+        -13,
+        Math.PI
+    );
+
+    streetLamp(
+        13,
+        i,
+        Math.PI/2
+    );
+
+    streetLamp(
+        -13,
+        i,
+        -Math.PI/2
+    );
+}
+
+/* =====================================================
+   STROMY
+===================================================== */
+
+function tree(x,z){
+
+    const trunk=
+        new THREE.Mesh(
+            new THREE.CylinderGeometry(
+                .3,
+                .45,
+                3,
+                8
+            ),
+            material(0x684321)
+        );
+
+    trunk.position.set(
+        x,
+        1.5,
+        z
+    );
+
+    scene.add(trunk);
+
+    const crown=
         new THREE.Mesh(
             new THREE.SphereGeometry(
-                4,
-                8,
-                6
+                2.8,
+                10,
+                8
             ),
-            new THREE.MeshStandardMaterial({
-                color:0x176b2a
-            })
+            material(0x2d6f35)
         );
 
     crown.position.set(
         x,
-        6,
+        4.5,
         z
     );
 
     scene.add(crown);
 }
 
-for(let i=0;i<160;i++){
+for(let i=0;i<100;i++){
 
-    const x =
-        Math.random()*600-300;
+    const x=
+        Math.random()*620-310;
 
-    const z =
-        Math.random()*600-300;
+    const z=
+        Math.random()*620-310;
 
     if(
-        Math.abs(x)<20 ||
-        Math.abs(z)<20
-    ){
-        continue;
-    }
+        Math.abs(x)<25 ||
+        Math.abs(z)<25
+    ) continue;
 
-    createTree(x,z);
+    tree(x,z);
 }
 
-/* =========================
-   HRÁČ
-========================= */
+/* =====================================================
+   SEMAFORY
+===================================================== */
 
-const player =
+function trafficLight(x,z){
+
+    cube(
+        x,
+        3,
+        z,
+        .18,
+        6,
+        .18,
+        0x222222
+    );
+
+    cube(
+        x,
+        5.5,
+        z,
+        .65,
+        1.7,
+        .5,
+        0x151515
+    );
+
+    const red=
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .17,
+                10,
+                8
+            ),
+            material(0xff2222)
+        );
+
+    red.position.set(
+        x,
+        6,
+        z-.27
+    );
+
+    scene.add(red);
+}
+
+trafficLight(
+    12,
+    12
+);
+
+trafficLight(
+    -12,
+    -12
+);
+
+trafficLight(
+    12,
+    -12
+);
+
+trafficLight(
+    -12,
+    12
+);
+
+/* =====================================================
+   HRÁČ
+===================================================== */
+
+const player=
     new THREE.Group();
 
-const playerBody =
+const body=
     new THREE.Mesh(
         new THREE.BoxGeometry(
             1.2,
             2,
-            0.7
+            .7
         ),
-        new THREE.MeshStandardMaterial({
-            color:0x2266ff
-        })
+        material(0x2465d8)
     );
 
-playerBody.position.y=1.3;
+body.position.y=1.3;
 
-player.add(playerBody);
+player.add(body);
 
-const playerHead =
+const head=
     new THREE.Mesh(
         new THREE.SphereGeometry(
-            0.55,
-            12,
-            8
+            .55,
+            16,
+            12
         ),
-        new THREE.MeshStandardMaterial({
-            color:0xffcc99
-        })
+        material(0xffc49c)
     );
 
-playerHead.position.y=2.7;
+head.position.y=2.7;
 
-player.add(playerHead);
+player.add(head);
 
 scene.add(player);
 
@@ -498,53 +1216,49 @@ player.position.set(
     10
 );
 
-/* =========================
+/* =====================================================
    OSTATNÍ HRÁČI
-========================= */
+===================================================== */
 
-const otherPlayers =
+const otherPlayers=
     new Map();
 
 function createOtherPlayer(p){
 
-    if(otherPlayers.has(p.id)){
-        return;
-    }
+    if(
+        otherPlayers.has(p.id)
+    ) return;
 
-    const group =
+    const group=
         new THREE.Group();
 
-    const body =
+    const b=
         new THREE.Mesh(
             new THREE.BoxGeometry(
                 1.2,
                 2,
-                0.7
+                .7
             ),
-            new THREE.MeshStandardMaterial({
-                color:0xff3333
-            })
+            material(0xc62e36)
         );
 
-    body.position.y=1.3;
+    b.position.y=1.3;
 
-    group.add(body);
+    group.add(b);
 
-    const head =
+    const h=
         new THREE.Mesh(
             new THREE.SphereGeometry(
-                0.55,
-                12,
-                8
+                .55,
+                16,
+                12
             ),
-            new THREE.MeshStandardMaterial({
-                color:0xffcc99
-            })
+            material(0xffc49c)
         );
 
-    head.position.y=2.7;
+    h.position.y=2.7;
 
-    group.add(head);
+    group.add(h);
 
     scene.add(group);
 
@@ -556,7 +1270,7 @@ function createOtherPlayer(p){
 
 function updatePlayers(list){
 
-    const ids =
+    const ids=
         new Set(
             list.map(
                 p=>p.id
@@ -564,83 +1278,82 @@ function updatePlayers(list){
         );
 
     for(
-        const [id,group]
+        const [id,g]
         of otherPlayers
     ){
 
         if(!ids.has(id)){
 
-            scene.remove(group);
+            scene.remove(g);
 
             otherPlayers.delete(id);
         }
     }
 
-    for(const p of list){
+    for(
+        const p of list
+    ){
 
-        if(p.id===myId){
+        if(p.id===myId)
             continue;
-        }
 
         createOtherPlayer(p);
 
-        const group =
+        const g=
             otherPlayers.get(p.id);
 
-        group.position.set(
+        g.position.set(
             p.x,
             0,
             p.z
         );
 
-        group.rotation.y =
+        g.rotation.y=
             p.rot || 0;
     }
 }
 
-/* =========================
+/* =====================================================
    OVLÁDÁNÍ
-========================= */
+===================================================== */
 
 const keys={};
 
 window.addEventListener(
     "keydown",
     e=>{
+
         keys[
             e.key.toLowerCase()
         ]=true;
 
-        if(e.key==="1"){
+        if(e.key==="1")
             setJob("Civilian");
-        }
 
-        if(e.key==="2"){
+        if(e.key==="2")
             setJob("Police");
-        }
 
-        if(e.key==="3"){
+        if(e.key==="3")
             setJob("Medic");
-        }
 
-        if(e.key==="4"){
+        if(e.key==="4")
             setJob("Firefighter");
-        }
     }
 );
 
 window.addEventListener(
     "keyup",
     e=>{
+
         keys[
             e.key.toLowerCase()
         ]=false;
     }
 );
 
-/* =========================
-   MYŠ
-========================= */
+/* =====================================================
+   KAMERA
+===================================================== */
 
 let yaw=0;
 
@@ -660,14 +1373,14 @@ document.addEventListener(
         ){
 
             yaw -=
-                e.movementX * 0.002;
+                e.movementX*.002;
         }
     }
 );
 
-/* =========================
+/* =====================================================
    WEBSOCKET
-========================= */
+===================================================== */
 
 let socket=null;
 let myId=null;
@@ -677,22 +1390,22 @@ let myJob="Civilian";
 
 function connect(){
 
-    const protocol =
+    const protocol=
         location.protocol==="https:"
         ? "wss:"
         : "ws:";
 
-    socket =
+    socket=
         new WebSocket(
-            protocol +
-            "//" +
+            protocol+
+            "//"+
             location.host
         );
 
     socket.onopen=()=>{
 
         console.log(
-            "Connected to server"
+            "Connected"
         );
     };
 
@@ -700,7 +1413,7 @@ function connect(){
 
         try{
 
-            const data =
+            const data=
                 JSON.parse(e.data);
 
             if(
@@ -709,10 +1422,10 @@ function connect(){
 
                 myId=data.id;
 
-                myMoney =
+                myMoney=
                     data.self.cash;
 
-                myJob =
+                myJob=
                     data.self.job;
 
                 updateUI();
@@ -728,24 +1441,17 @@ function connect(){
 
                 document.getElementById(
                     "players"
-                ).textContent =
+                ).textContent=
                     data.players.length;
             }
 
-        }catch(error){
+        }catch(err){
 
-            console.log(
-                "Server message error:",
-                error
-            );
+            console.log(err);
         }
     };
 
     socket.onclose=()=>{
-
-        console.log(
-            "Disconnected. Reconnecting..."
-        );
 
         setTimeout(
             connect,
@@ -756,9 +1462,9 @@ function connect(){
 
 connect();
 
-/* =========================
+/* =====================================================
    PRÁCE
-========================= */
+===================================================== */
 
 window.setJob=function(job){
 
@@ -766,13 +1472,14 @@ window.setJob=function(job){
 
     if(
         socket &&
-        socket.readyState===WebSocket.OPEN
+        socket.readyState===
+        WebSocket.OPEN
     ){
 
         socket.send(
             JSON.stringify({
                 type:"job",
-                job:job
+                job
             })
         );
     }
@@ -780,73 +1487,76 @@ window.setJob=function(job){
     updateUI();
 
     showEvent(
-        "Nová práce: " + job
+        "Nová práce: "+job
     );
 };
 
-/* =========================
-   PENÍZE
-========================= */
+/* =====================================================
+   ODMĚNY
+===================================================== */
 
 function reward(amount){
 
     if(
         socket &&
-        socket.readyState===WebSocket.OPEN
+        socket.readyState===
+        WebSocket.OPEN
     ){
 
         socket.send(
             JSON.stringify({
                 type:"reward",
-                amount:amount
+                amount
             })
         );
     }
 
-    myMoney += amount;
+    myMoney+=amount;
 
     updateUI();
 }
 
-/* =========================
+/* =====================================================
    UI
-========================= */
+===================================================== */
 
 function updateUI(){
 
     document.getElementById(
         "money"
-    ).textContent =
+    ).textContent=
         Math.floor(myMoney);
 
     document.getElementById(
         "job"
-    ).textContent =
+    ).textContent=
         myJob;
 }
 
 function showEvent(text){
 
-    const event =
+    const el=
         document.getElementById(
             "event"
         );
 
-    event.textContent=text;
+    el.textContent=text;
 
-    event.style.display="block";
+    el.style.display=
+        "block";
 
     setTimeout(
         ()=>{
-            event.style.display="none";
+            el.style.display=
+                "none";
         },
         2500
     );
 }
 
-/* =========================
-   RANDOM EVENTY
-========================= */
+/* =====================================================
+   EVENTY
+===================================================== */
 
 setInterval(()=>{
 
@@ -858,10 +1568,10 @@ setInterval(()=>{
         "🚦 Dopravní kolona!"
     ];
 
-    const event =
+    const event=
         events[
             Math.floor(
-                Math.random() *
+                Math.random()*
                 events.length
             )
         ];
@@ -890,14 +1600,14 @@ setInterval(()=>{
 
 },15000);
 
-/* =========================
+/* =====================================================
    GAME LOOP
-========================= */
+===================================================== */
 
-const clock =
+const clock=
     new THREE.Clock();
 
-let lastNetworkUpdate=0;
+let lastNetwork=0;
 
 function animate(){
 
@@ -905,77 +1615,66 @@ function animate(){
         animate
     );
 
-    const dt =
+    const dt=
         Math.min(
             clock.getDelta(),
-            0.05
+            .05
         );
 
-    let speed =
+    const speed=
         keys["shift"]
         ? 22
-        : 12;
+        : 11;
 
     let dx=0;
     let dz=0;
 
-    if(keys["w"]){
-        dz-=1;
-    }
-
-    if(keys["s"]){
-        dz+=1;
-    }
-
-    if(keys["a"]){
-        dx-=1;
-    }
-
-    if(keys["d"]){
-        dx+=1;
-    }
+    if(keys["w"]) dz-=1;
+    if(keys["s"]) dz+=1;
+    if(keys["a"]) dx-=1;
+    if(keys["d"]) dx+=1;
 
     if(dx!==0 || dz!==0){
 
-        const length =
+        const length=
             Math.hypot(dx,dz);
 
         dx/=length;
         dz/=length;
 
-        const sin =
+        const sin=
             Math.sin(yaw);
 
-        const cos =
+        const cos=
             Math.cos(yaw);
 
-        const moveX =
-            dx*cos - dz*sin;
+        const moveX=
+            dx*cos-dz*sin;
 
-        const moveZ =
-            dx*sin + dz*cos;
+        const moveZ=
+            dx*sin+dz*cos;
 
         player.position.x +=
-            moveX * speed * dt;
+            moveX*speed*dt;
 
         player.position.z +=
-            moveZ * speed * dt;
+            moveZ*speed*dt;
 
-        player.position.x =
+        player.position.x=
             THREE.MathUtils.clamp(
                 player.position.x,
                 -320,
                 320
             );
 
-        player.position.z =
+        player.position.z=
             THREE.MathUtils.clamp(
                 player.position.z,
                 -320,
                 320
             );
 
-        player.rotation.y =
+        player.rotation.y=
             Math.atan2(
                 moveX,
                 moveZ
@@ -984,30 +1683,32 @@ function animate(){
 
     /* kamera */
 
-    camera.position.x =
-        player.position.x +
+    camera.position.x=
+        player.position.x+
         Math.sin(yaw)*8;
 
-    camera.position.z =
-        player.position.z +
+    camera.position.z=
+        player.position.z+
         Math.cos(yaw)*8;
 
-    camera.position.y=5;
+    camera.position.y=5.2;
 
     camera.lookAt(
         player.position.x,
-        1.5,
+        1.4,
         player.position.z
     );
 
-    /* server update */
+    /* server */
 
-    const now=performance.now();
+    const now=
+        performance.now();
 
     if(
         socket &&
-        socket.readyState===WebSocket.OPEN &&
-        now-lastNetworkUpdate>50
+        socket.readyState===
+        WebSocket.OPEN &&
+        now-lastNetwork>60
     ){
 
         socket.send(
@@ -1019,7 +1720,7 @@ function animate(){
             })
         );
 
-        lastNetworkUpdate=now;
+        lastNetwork=now;
     }
 
     renderer.render(
@@ -1030,17 +1731,16 @@ function animate(){
 
 animate();
 
-/* =========================
+/* =====================================================
    RESIZE
-========================= */
+===================================================== */
 
 window.addEventListener(
     "resize",
     ()=>{
 
-        camera.aspect =
-            innerWidth /
-            innerHeight;
+        camera.aspect=
+            innerWidth/innerHeight;
 
         camera.updateProjectionMatrix();
 
