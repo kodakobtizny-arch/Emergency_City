@@ -1,14 +1,13 @@
+```html
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emergency City - Tactical Desert</title>
+<title>Tactical Desert</title>
 
 <style>
-*{
-    box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 html,body{
     margin:0;
@@ -23,6 +22,10 @@ canvas{
     display:block;
 }
 
+button,select{
+    font-family:Arial,Helvetica,sans-serif;
+}
+
 #menu{
     position:fixed;
     inset:0;
@@ -33,37 +36,71 @@ canvas{
     justify-content:center;
     color:white;
     background:
-        linear-gradient(#0008,#000b),
-        radial-gradient(circle at center,#b98752,#21160d);
+        linear-gradient(#0009,#000d),
+        radial-gradient(circle at center,#b98752,#17100a);
 }
 
 #menu h1{
     margin:0;
-    font-size:64px;
-    letter-spacing:8px;
+    font-size:62px;
+    letter-spacing:7px;
     text-shadow:0 5px 20px #000;
 }
 
 #menu p{
-    margin:15px 0;
     color:#ddd;
-    font-size:18px;
+    margin:12px 0 25px;
 }
 
-#play{
-    margin-top:25px;
-    padding:16px 70px;
+.menuButton{
+    width:260px;
+    padding:15px;
+    margin:7px;
     border:0;
     background:#b87939;
     color:white;
-    font-size:21px;
+    font-size:19px;
     font-weight:bold;
     cursor:pointer;
-    box-shadow:0 5px 20px #0008;
 }
 
-#play:hover{
+.menuButton:hover{
     background:#d18b43;
+}
+
+#settings{
+    position:fixed;
+    z-index:200;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    width:390px;
+    padding:28px;
+    color:white;
+    background:#161616f5;
+    border:1px solid #9c6b38;
+    box-shadow:0 15px 50px #000;
+    display:none;
+}
+
+#settings h2{
+    margin-top:0;
+    text-align:center;
+}
+
+.setting{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 0;
+    border-bottom:1px solid #333;
+}
+
+.setting select{
+    background:#252525;
+    color:white;
+    border:1px solid #555;
+    padding:8px 12px;
 }
 
 #hud{
@@ -72,56 +109,7 @@ canvas{
     z-index:10;
     pointer-events:none;
     color:white;
-}
-
-#crosshair{
-    position:absolute;
-    left:50%;
-    top:50%;
-    width:5px;
-    height:5px;
-    transform:translate(-50%,-50%);
-    background:white;
-    box-shadow:
-        0 0 2px #000,
-        0 0 5px #000;
-}
-
-.cross{
-    position:absolute;
-    background:white;
-}
-
-.cross.top{
-    width:2px;
-    height:9px;
-    left:50%;
-    top:calc(50% - 15px);
-    transform:translateX(-50%);
-}
-
-.cross.bottom{
-    width:2px;
-    height:9px;
-    left:50%;
-    top:calc(50% + 7px);
-    transform:translateX(-50%);
-}
-
-.cross.left{
-    height:2px;
-    width:9px;
-    top:50%;
-    left:calc(50% - 15px);
-    transform:translateY(-50%);
-}
-
-.cross.right{
-    height:2px;
-    width:9px;
-    top:50%;
-    left:calc(50% + 7px);
-    transform:translateY(-50%);
+    display:none;
 }
 
 #score{
@@ -131,17 +119,59 @@ canvas{
     transform:translateX(-50%);
     padding:10px 28px;
     background:#111c;
-    border-bottom:2px solid #b87939;
-    font-size:22px;
+    font-size:21px;
     font-weight:bold;
 }
 
-.blue{
-    color:#4ca9ff;
+.blue{color:#4da8ff}
+.red{color:#ff5050}
+
+#crosshair{
+    position:absolute;
+    left:50%;
+    top:50%;
+    width:4px;
+    height:4px;
+    transform:translate(-50%,-50%);
+    background:white;
+    box-shadow:0 0 4px #000;
 }
 
-.red{
-    color:#ff5555;
+.cross{
+    position:absolute;
+    background:white;
+}
+
+.top{
+    width:2px;
+    height:9px;
+    left:50%;
+    top:calc(50% - 15px);
+    transform:translateX(-50%);
+}
+
+.bottom{
+    width:2px;
+    height:9px;
+    left:50%;
+    top:calc(50% + 7px);
+    transform:translateX(-50%);
+}
+
+.left{
+    width:9px;
+    height:2px;
+    left:calc(50% - 15px);
+    top:50%;
+    transform:translateY(-50%);
+}
+
+.right{
+    width:9px;
+    height:2px;
+    left:calc(50% + 7px);
+    top:50%;
+    transform:translateY(-50%);
 }
 
 #healthBox{
@@ -154,19 +184,19 @@ canvas{
     font-size:20px;
     font-weight:bold;
     margin-bottom:7px;
-    text-shadow:0 2px 4px #000;
+    text-shadow:0 2px 5px #000;
 }
 
 #healthOuter{
-    width:250px;
-    height:24px;
+    width:240px;
+    height:23px;
     border:2px solid white;
     background:#111c;
 }
 
 #healthBar{
-    width:100%;
     height:100%;
+    width:100%;
     background:#43c765;
 }
 
@@ -180,8 +210,8 @@ canvas{
 }
 
 #ammo small{
+    color:#aaa;
     font-size:18px;
-    color:#bbb;
 }
 
 #hitmarker{
@@ -189,13 +219,20 @@ canvas{
     left:50%;
     top:50%;
     transform:translate(-50%,-50%);
-    color:white;
-    font-size:38px;
+    font-size:36px;
     opacity:0;
-    text-shadow:0 2px 5px #000;
 }
 
-#status{
+#fps{
+    position:absolute;
+    right:15px;
+    top:15px;
+    color:#fff;
+    font-size:13px;
+    opacity:.7;
+}
+
+#message{
     position:absolute;
     left:50%;
     bottom:20px;
@@ -209,11 +246,79 @@ canvas{
 
 <body>
 
+<!-- MENU -->
+
 <div id="menu">
+
     <h1>TACTICAL DESERT</h1>
+
     <p>Competitive tactical FPS</p>
-    <button id="play">PLAY</button>
+
+    <button class="menuButton" id="play">
+        PLAY
+    </button>
+
+    <button class="menuButton" id="settingsButton">
+        SETTINGS
+    </button>
+
 </div>
+
+
+<!-- SETTINGS -->
+
+<div id="settings">
+
+    <h2>SETTINGS</h2>
+
+    <div class="setting">
+        <span>Graphics</span>
+
+        <select id="graphics">
+            <option value="low">LOW</option>
+            <option value="medium">MEDIUM</option>
+            <option value="high">HIGH</option>
+        </select>
+    </div>
+
+    <div class="setting">
+        <span>FPS limit</span>
+
+        <select id="fpsLimit">
+            <option value="30">30 FPS</option>
+            <option value="60" selected>60 FPS</option>
+            <option value="120">120 FPS</option>
+            <option value="0">UNLIMITED</option>
+        </select>
+    </div>
+
+    <div class="setting">
+        <span>Shadows</span>
+
+        <select id="shadows">
+            <option value="off">OFF</option>
+            <option value="on">ON</option>
+        </select>
+    </div>
+
+    <div class="setting">
+        <span>View distance</span>
+
+        <select id="distance">
+            <option value="low">LOW</option>
+            <option value="medium" selected>MEDIUM</option>
+            <option value="high">HIGH</option>
+        </select>
+    </div>
+
+    <button class="menuButton" id="closeSettings">
+        BACK
+    </button>
+
+</div>
+
+
+<!-- HUD -->
 
 <div id="hud">
 
@@ -224,6 +329,7 @@ canvas{
     </div>
 
     <div id="crosshair"></div>
+
     <div class="cross top"></div>
     <div class="cross bottom"></div>
     <div class="cross left"></div>
@@ -231,6 +337,7 @@ canvas{
 
     <div id="healthBox">
         <div id="healthText">100 HP</div>
+
         <div id="healthOuter">
             <div id="healthBar"></div>
         </div>
@@ -242,28 +349,92 @@ canvas{
 
     <div id="hitmarker">✕</div>
 
-    <div id="status">
-        WASD MOVE &nbsp; • &nbsp; SHIFT SPRINT &nbsp; • &nbsp; LMB FIRE &nbsp; • &nbsp; R RELOAD
+    <div id="fps">FPS: --</div>
+
+    <div id="message">
+        WASD MOVE • SHIFT SPRINT • LMB FIRE • R RELOAD • ESC MENU
     </div>
 
 </div>
+
 
 <script type="module">
 
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-import {
-    PointerLockControls
-} from
-"https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/controls/PointerLockControls.js";
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+let settings = {
+    graphics:"low",
+    fps:60,
+    shadows:false,
+    distance:"medium"
+};
+
+const saved =
+    localStorage.getItem(
+        "tacticalSettings"
+    );
+
+if(saved){
+
+    try{
+        settings =
+            Object.assign(
+                settings,
+                JSON.parse(saved)
+            );
+    }catch(e){}
+}
+
+document.getElementById("graphics").value =
+    settings.graphics;
+
+document.getElementById("fpsLimit").value =
+    String(settings.fps);
+
+document.getElementById("shadows").value =
+    settings.shadows ? "on" : "off";
+
+document.getElementById("distance").value =
+    settings.distance;
 
 
-/* =========================================================
+function saveSettings(){
+
+    settings.graphics =
+        document.getElementById("graphics").value;
+
+    settings.fps =
+        Number(
+            document.getElementById("fpsLimit").value
+        );
+
+    settings.shadows =
+        document.getElementById("shadows").value === "on";
+
+    settings.distance =
+        document.getElementById("distance").value;
+
+    localStorage.setItem(
+        "tacticalSettings",
+        JSON.stringify(settings)
+    );
+
+    applySettings();
+}
+
+
+/* =====================================================
    SCENE
-========================================================= */
+===================================================== */
 
-const scene = new THREE.Scene();
+const scene =
+    new THREE.Scene();
 
 scene.background =
     new THREE.Color(0xb99367);
@@ -276,15 +447,15 @@ scene.fog =
     );
 
 
-/* =========================================================
+/* =====================================================
    CAMERA
-========================================================= */
+===================================================== */
 
 const camera =
     new THREE.PerspectiveCamera(
         75,
-        innerWidth / innerHeight,
-        0.05,
+        innerWidth/innerHeight,
+        .05,
         600
     );
 
@@ -295,14 +466,15 @@ camera.position.set(
 );
 
 
-/* =========================================================
+/* =====================================================
    RENDERER
-========================================================= */
+===================================================== */
 
 const renderer =
     new THREE.WebGLRenderer({
-        antialias:true,
-        powerPreference:"high-performance"
+        antialias:false,
+        powerPreference:
+            "high-performance"
     });
 
 renderer.setSize(
@@ -311,29 +483,24 @@ renderer.setSize(
 );
 
 renderer.setPixelRatio(
-    Math.min(
-        window.devicePixelRatio,
-        1.5
-    )
+    1
 );
 
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type =
-    THREE.PCFSoftShadowMap;
+renderer.shadowMap.enabled = false;
 
 document.body.appendChild(
     renderer.domElement
 );
 
 
-/* =========================================================
-   LIGHTING
-========================================================= */
+/* =====================================================
+   LIGHT
+===================================================== */
 
 const sun =
     new THREE.DirectionalLight(
         0xffd39a,
-        3.2
+        3
     );
 
 sun.position.set(
@@ -342,25 +509,20 @@ sun.position.set(
     100
 );
 
-sun.castShadow = true;
-
-sun.shadow.mapSize.width = 1024;
-sun.shadow.mapSize.height = 1024;
-
 scene.add(sun);
 
 scene.add(
     new THREE.HemisphereLight(
         0xffd9aa,
         0x453021,
-        1.8
+        1.7
     )
 );
 
 
-/* =========================================================
+/* =====================================================
    MATERIALS
-========================================================= */
+===================================================== */
 
 const sand =
     new THREE.MeshStandardMaterial({
@@ -371,7 +533,7 @@ const sand =
 const wall =
     new THREE.MeshStandardMaterial({
         color:0xc3a078,
-        roughness:.95
+        roughness:1
     });
 
 const darkWall =
@@ -395,21 +557,7 @@ const wood =
 const metal =
     new THREE.MeshStandardMaterial({
         color:0x4c4944,
-        roughness:.8,
-        metalness:.25
-    });
-
-const darkMetal =
-    new THREE.MeshStandardMaterial({
-        color:0x181a1c,
-        roughness:.45,
-        metalness:.65
-    });
-
-const glove =
-    new THREE.MeshStandardMaterial({
-        color:0x1c2023,
-        roughness:1
+        roughness:.8
     });
 
 const windowMat =
@@ -419,38 +567,30 @@ const windowMat =
     });
 
 
-/* =========================================================
-   BUILDING HELPER
-========================================================= */
+/* =====================================================
+   CUBE
+===================================================== */
 
 function cube(
-    x,
-    y,
-    z,
-    sx,
-    sy,
-    sz,
+    x,y,z,
+    sx,sy,sz,
     material
 ){
 
     const m =
         new THREE.Mesh(
             new THREE.BoxGeometry(
-                sx,
-                sy,
-                sz
+                sx,sy,sz
             ),
             material
         );
 
     m.position.set(
-        x,
-        y,
-        z
+        x,y,z
     );
 
-    m.castShadow = true;
-    m.receiveShadow = true;
+    m.castShadow = settings.shadows;
+    m.receiveShadow = settings.shadows;
 
     scene.add(m);
 
@@ -458,259 +598,79 @@ function cube(
 }
 
 
-/* =========================================================
-   GROUND
-========================================================= */
+/* =====================================================
+   MAP
+===================================================== */
 
 cube(
-    0,
-    -1,
-    0,
-    420,
-    2,
-    420,
+    0,-1,0,
+    420,2,420,
     sand
 );
 
 
-/* =========================================================
-   OUTER MAP
-========================================================= */
+/* outer walls */
+
+cube(0,9,-95,190,18,4,wall);
+cube(0,9,95,190,18,4,wall);
+cube(-95,9,0,4,18,190,wall);
+cube(95,9,0,4,18,190,wall);
+
+
+/* buildings */
+
+cube(-67,10,-60,45,20,55,wall);
+cube(67,10,-60,45,20,55,darkWall);
+
+cube(-68,9,28,48,18,42,darkWall);
+cube(68,9,28,48,18,42,wall);
+
+cube(-65,8,72,55,16,35,wall);
+cube(65,8,72,55,16,35,darkWall);
+
+
+/* central street */
 
 cube(
-    0,
-    9,
-    -95,
-    190,
-    18,
-    4,
-    wall
-);
-
-cube(
-    0,
-    9,
-    95,
-    190,
-    18,
-    4,
-    wall
-);
-
-cube(
-    -95,
-    9,
-    0,
-    4,
-    18,
-    190,
-    wall
-);
-
-cube(
-    95,
-    9,
-    0,
-    4,
-    18,
-    190,
-    wall
-);
-
-
-/* =========================================================
-   BUILDINGS
-========================================================= */
-
-cube(
-    -67,
-    10,
-    -60,
-    45,
-    20,
-    55,
-    wall
-);
-
-cube(
-    67,
-    10,
-    -60,
-    45,
-    20,
-    55,
-    darkWall
-);
-
-cube(
-    -68,
-    9,
-    28,
-    48,
-    18,
-    42,
-    darkWall
-);
-
-cube(
-    68,
-    9,
-    28,
-    48,
-    18,
-    42,
-    wall
-);
-
-cube(
-    -65,
-    8,
-    72,
-    55,
-    16,
-    35,
-    wall
-);
-
-cube(
-    65,
-    8,
-    72,
-    55,
-    16,
-    35,
-    darkWall
-);
-
-
-/* =========================================================
-   CENTRAL ROAD
-========================================================= */
-
-cube(
-    0,
-    .02,
-    0,
-    48,
-    .08,
-    185,
+    0,.02,0,
+    48,.08,185,
     road
 );
 
 
-/* =========================================================
-   CENTRAL COURTYARD
-========================================================= */
+/* courtyard */
 
 cube(
-    0,
-    .05,
-    -8,
-    70,
-    .1,
-    42,
+    0,.05,-8,
+    70,.1,42,
     sand
 );
 
 
-/* =========================================================
-   COVER WALLS
-========================================================= */
+/* cover */
 
-cube(
-    -28,
-    3,
-    -8,
-    4,
-    6,
-    34,
-    wall
-);
+cube(-28,3,-8,4,6,34,wall);
+cube(28,3,-8,4,6,34,wall);
 
-cube(
-    28,
-    3,
-    -8,
-    4,
-    6,
-    34,
-    wall
-);
-
-cube(
-    -15,
-    3,
-    18,
-    28,
-    6,
-    4,
-    wall
-);
-
-cube(
-    15,
-    3,
-    18,
-    28,
-    6,
-    4,
-    wall
-);
+cube(-15,3,18,28,6,4,wall);
+cube(15,3,18,28,6,4,wall);
 
 
-/* =========================================================
-   ALLEYS
-========================================================= */
+/* alleys */
 
-cube(
-    -17,
-    3,
-    48,
-    4,
-    6,
-    32,
-    wall
-);
+cube(-17,3,48,4,6,32,wall);
+cube(17,3,48,4,6,32,wall);
 
-cube(
-    17,
-    3,
-    48,
-    4,
-    6,
-    32,
-    wall
-);
-
-cube(
-    -17,
-    3,
-    -62,
-    4,
-    6,
-    32,
-    wall
-);
-
-cube(
-    17,
-    3,
-    -62,
-    4,
-    6,
-    32,
-    wall
-);
+cube(-17,3,-62,4,6,32,wall);
+cube(17,3,-62,4,6,32,wall);
 
 
-/* =========================================================
+/* =====================================================
    WINDOWS
-========================================================= */
+===================================================== */
 
-function addWindows(
-    x,
-    z,
-    width,
+function windows(
+    x,z,
     depth,
     height
 ){
@@ -718,78 +678,38 @@ function addWindows(
     for(let i=-1;i<=1;i++){
 
         cube(
-            x + i*12,
-            height/2 + 2,
-            z - depth/2 - .05,
-            5,
-            5,
-            .15,
+            x+i*12,
+            height/2+2,
+            z-depth/2-.05,
+            5,5,.15,
             windowMat
         );
 
         cube(
-            x + i*12,
-            height/2 + 2,
-            z + depth/2 + .05,
-            5,
-            5,
-            .15,
+            x+i*12,
+            height/2+2,
+            z+depth/2+.05,
+            5,5,.15,
             windowMat
         );
     }
 }
 
-addWindows(
-    -67,
-    -60,
-    45,
-    55,
-    20
-);
-
-addWindows(
-    67,
-    -60,
-    45,
-    55,
-    20
-);
-
-addWindows(
-    -68,
-    28,
-    48,
-    42,
-    18
-);
-
-addWindows(
-    68,
-    28,
-    48,
-    42,
-    18
-);
+windows(-67,-60,55,20);
+windows(67,-60,55,20);
+windows(-68,28,42,18);
+windows(68,28,42,18);
 
 
-/* =========================================================
+/* =====================================================
    CRATES
-========================================================= */
+===================================================== */
 
-function crate(
-    x,
-    y,
-    z,
-    size=4
-){
+function crate(x,y,z){
 
     cube(
-        x,
-        y,
-        z,
-        size,
-        size,
-        size,
+        x,y,z,
+        4,4,4,
         wood
     );
 }
@@ -805,18 +725,12 @@ crate(-50,2,35);
 crate(45,2,-35);
 crate(50,2,-35);
 
-crate(-42,2,-20);
-crate(42,2,20);
 
-
-/* =========================================================
+/* =====================================================
    BARRELS
-========================================================= */
+===================================================== */
 
-function barrel(
-    x,
-    z
-){
+function barrel(x,z){
 
     const b =
         new THREE.Mesh(
@@ -824,18 +738,14 @@ function barrel(
                 1.35,
                 1.35,
                 3,
-                16
+                12
             ),
             metal
         );
 
     b.position.set(
-        x,
-        1.5,
-        z
+        x,1.5,z
     );
-
-    b.castShadow = true;
 
     scene.add(b);
 }
@@ -845,13 +755,10 @@ barrel(-24,20);
 barrel(21,-20);
 barrel(24,-20);
 
-barrel(-45,-42);
-barrel(45,42);
 
-
-/* =========================================================
+/* =====================================================
    PALMS
-========================================================= */
+===================================================== */
 
 const trunkMat =
     new THREE.MeshStandardMaterial({
@@ -870,47 +777,38 @@ function palm(x,z){
     const trunk =
         new THREE.Mesh(
             new THREE.CylinderGeometry(
-                .55,
-                .85,
-                8,
-                10
+                .55,.85,8,10
             ),
             trunkMat
         );
 
     trunk.position.set(
-        x,
-        4,
-        z
+        x,4,z
     );
 
-    trunk.castShadow=true;
-
     scene.add(trunk);
+
+    if(settings.graphics==="low")
+        return;
 
     for(let i=0;i<8;i++){
 
         const leaf =
             new THREE.Mesh(
                 new THREE.BoxGeometry(
-                    .45,
-                    .22,
-                    7
+                    .45,.22,7
                 ),
                 leafMat
             );
 
         leaf.position.set(
-            x,
-            8,
-            z
+            x,8,z
         );
 
         leaf.rotation.y =
-            i * Math.PI / 4;
+            i*Math.PI/4;
 
-        leaf.rotation.x =
-            -.35;
+        leaf.rotation.x=-.35;
 
         scene.add(leaf);
     }
@@ -922,9 +820,9 @@ palm(-75,65);
 palm(75,-65);
 
 
-/* =========================================================
+/* =====================================================
    PLAYER
-========================================================= */
+===================================================== */
 
 const player =
     new THREE.Object3D();
@@ -932,17 +830,15 @@ const player =
 scene.add(player);
 
 player.position.set(
-    0,
-    1.7,
-    65
+    0,0,65
 );
 
 player.add(camera);
 
 
-/* =========================================================
+/* =====================================================
    FPS WEAPON
-========================================================= */
+===================================================== */
 
 const weapon =
     new THREE.Group();
@@ -950,15 +846,11 @@ const weapon =
 camera.add(weapon);
 
 weapon.position.set(
-    .48,
-    -.42,
-    -.85
+    .48,-.42,-.85
 );
 
 
-/* =========================================================
-   WEAPON MATERIALS
-========================================================= */
+/* gun materials */
 
 const gunBlack =
     new THREE.MeshStandardMaterial({
@@ -970,48 +862,39 @@ const gunBlack =
 const gunDark =
     new THREE.MeshStandardMaterial({
         color:0x292b2c,
-        roughness:.65,
-        metalness:.45
+        roughness:.65
     });
 
 const rubber =
     new THREE.MeshStandardMaterial({
         color:0x101112,
-        roughness:.95
+        roughness:1
+    });
+
+const glove =
+    new THREE.MeshStandardMaterial({
+        color:0x1c2023,
+        roughness:1
     });
 
 
-/* =========================================================
-   GUN PART HELPER
-========================================================= */
-
 function gunPart(
-    x,
-    y,
-    z,
-    sx,
-    sy,
-    sz,
+    x,y,z,
+    sx,sy,sz,
     material
 ){
 
     const m =
         new THREE.Mesh(
             new THREE.BoxGeometry(
-                sx,
-                sy,
-                sz
+                sx,sy,sz
             ),
             material
         );
 
     m.position.set(
-        x,
-        y,
-        z
+        x,y,z
     );
-
-    m.castShadow=true;
 
     weapon.add(m);
 
@@ -1019,130 +902,86 @@ function gunPart(
 }
 
 
-/* =========================================================
-   RIFLE BODY
-========================================================= */
+/* rifle */
 
 gunPart(
-    0,
-    0,
-    0,
-    .34,
-    .28,
-    1.25,
+    0,0,0,
+    .34,.28,1.25,
     gunBlack
 );
 
 gunPart(
-    0,
-    .18,
-    -.05,
-    .30,
-    .13,
-    1.15,
+    0,.18,-.05,
+    .30,.13,1.15,
     gunDark
 );
 
 gunPart(
-    0,
-    .02,
-    -.82,
-    .27,
-    .23,
-    .95,
+    0,.02,-.82,
+    .27,.23,.95,
     gunBlack
 );
 
 
-/* =========================================================
-   MAGAZINE
-========================================================= */
+/* magazine */
 
 const magazine =
     gunPart(
-        0,
-        -.30,
-        .05,
-        .22,
-        .48,
-        .32,
+        0,-.30,.05,
+        .22,.48,.32,
         gunBlack
     );
 
-magazine.rotation.x = -.18;
+magazine.rotation.x=-.18;
 
 
-/* =========================================================
-   GRIP
-========================================================= */
+/* grip */
 
 const grip =
     gunPart(
-        0,
-        -.28,
-        .43,
-        .19,
-        .55,
-        .25,
+        0,-.28,.43,
+        .19,.55,.25,
         rubber
     );
 
-grip.rotation.x = -.18;
+grip.rotation.x=-.18;
 
 
-/* =========================================================
-   STOCK
-========================================================= */
+/* stock */
 
 gunPart(
-    0,
-    .02,
-    .72,
-    .30,
-    .25,
-    .45,
+    0,.02,.72,
+    .30,.25,.45,
     gunDark
 );
 
 
-/* =========================================================
-   BARREL
-========================================================= */
+/* barrel */
 
-const barrelGun =
+const gunBarrel =
     new THREE.Mesh(
         new THREE.CylinderGeometry(
-            .055,
-            .055,
-            1.2,
-            12
+            .055,.055,1.2,10
         ),
         gunBlack
     );
 
-barrelGun.rotation.x =
+gunBarrel.rotation.x =
     Math.PI/2;
 
-barrelGun.position.set(
-    0,
-    .04,
-    -1.55
+gunBarrel.position.set(
+    0,.04,-1.55
 );
 
-weapon.add(barrelGun);
+weapon.add(gunBarrel);
 
 
-/* =========================================================
-   MUZZLE
-========================================================= */
+/* muzzle */
 
 const muzzle =
     new THREE.Mesh(
         new THREE.CylinderGeometry(
-            .085,
-            .07,
-            .20,
-            12
+            .085,.07,.20,10
         ),
         gunBlack
     );
@@ -1151,50 +990,36 @@ muzzle.rotation.x =
     Math.PI/2;
 
 muzzle.position.set(
-    0,
-    .04,
-    -2.18
+    0,.04,-2.18
 );
 
 weapon.add(muzzle);
 
 
-/* =========================================================
-   SIGHTS
-========================================================= */
+/* sights */
 
 gunPart(
-    0,
-    .31,
-    -.35,
-    .08,
-    .08,
-    .38,
+    0,.31,-.35,
+    .08,.08,.38,
     gunBlack
 );
 
 gunPart(
-    0,
-    .37,
-    -.55,
-    .035,
-    .06,
-    .08,
+    0,.37,-.55,
+    .035,.06,.08,
     gunBlack
 );
 
 
-/* =========================================================
+/* =====================================================
    HANDS
-========================================================= */
+===================================================== */
 
 const frontHand =
     new THREE.Group();
 
 frontHand.position.set(
-    -.17,
-    -.13,
-    -1.02
+    -.17,-.13,-1.02
 );
 
 weapon.add(frontHand);
@@ -1202,10 +1027,7 @@ weapon.add(frontHand);
 const arm1 =
     new THREE.Mesh(
         new THREE.CylinderGeometry(
-            .12,
-            .14,
-            .65,
-            12
+            .12,.14,.65,10
         ),
         glove
     );
@@ -1214,9 +1036,7 @@ arm1.rotation.z =
     Math.PI/2;
 
 arm1.position.set(
-    -.10,
-    -.05,
-    .02
+    -.10,-.05,.02
 );
 
 frontHand.add(arm1);
@@ -1224,33 +1044,25 @@ frontHand.add(arm1);
 const hand1 =
     new THREE.Mesh(
         new THREE.BoxGeometry(
-            .22,
-            .16,
-            .28
+            .22,.16,.28
         ),
         glove
     );
 
 hand1.position.set(
-    .18,
-    -.03,
-    .02
+    .18,-.03,.02
 );
 
 frontHand.add(hand1);
 
 
-/* =========================================================
-   REAR HAND
-========================================================= */
+/* rear hand */
 
 const rearHand =
     new THREE.Group();
 
 rearHand.position.set(
-    .18,
-    -.22,
-    .42
+    .18,-.22,.42
 );
 
 weapon.add(rearHand);
@@ -1258,10 +1070,7 @@ weapon.add(rearHand);
 const arm2 =
     new THREE.Mesh(
         new THREE.CylinderGeometry(
-            .13,
-            .15,
-            .7,
-            12
+            .13,.15,.7,10
         ),
         glove
     );
@@ -1270,9 +1079,7 @@ arm2.rotation.z =
     Math.PI/2;
 
 arm2.position.set(
-    .10,
-    -.05,
-    .05
+    .10,-.05,.05
 );
 
 rearHand.add(arm2);
@@ -1280,25 +1087,19 @@ rearHand.add(arm2);
 const hand2 =
     new THREE.Mesh(
         new THREE.BoxGeometry(
-            .22,
-            .18,
-            .30
+            .22,.18,.30
         ),
         glove
     );
 
 hand2.position.set(
-    -.12,
-    .02,
-    -.02
+    -.12,.02,-.02
 );
 
 rearHand.add(hand2);
 
 
-/* =========================================================
-   MUZZLE FLASH
-========================================================= */
+/* muzzle flash */
 
 const flash =
     new THREE.PointLight(
@@ -1308,39 +1109,29 @@ const flash =
     );
 
 flash.position.set(
-    0,
-    .04,
-    -2.25
+    0,.04,-2.25
 );
 
 weapon.add(flash);
 
 
-/* =========================================================
-   FPS CONTROLS
-========================================================= */
+/* =====================================================
+   INPUT
+===================================================== */
 
-const controls =
-    new PointerLockControls(
-        camera,
-        document.body
-    );
-
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-const keys = {};
+const keys={};
 
 document.addEventListener(
     "keydown",
     e=>{
+
         keys[e.code]=true;
 
-        if(e.code==="KeyR"){
+        if(e.code==="KeyR")
             reload();
-        }
+
+        if(e.code==="Escape")
+            exitGame();
     }
 );
 
@@ -1352,14 +1143,44 @@ document.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
+   MOUSE LOOK
+===================================================== */
+
+let yaw=0;
+let pitch=0;
+
+document.addEventListener(
+    "mousemove",
+    e=>{
+
+        if(!gameStarted)
+            return;
+
+        if(document.pointerLockElement){
+
+            yaw -= e.movementX*.002;
+
+            pitch -= e.movementY*.002;
+
+            pitch =
+                THREE.MathUtils.clamp(
+                    pitch,
+                    -1.45,
+                    1.45
+                );
+        }
+    }
+);
+
+
+/* =====================================================
    AMMO
-========================================================= */
+===================================================== */
 
-let ammo = 30;
-let reserve = 90;
-
-let reloading = false;
+let ammo=30;
+let reserve=90;
+let reloading=false;
 
 function updateAmmo(){
 
@@ -1372,33 +1193,17 @@ function updateAmmo(){
 updateAmmo();
 
 
-/* =========================================================
-   RECOIL
-========================================================= */
-
-let recoil = 0;
-let recoilSide = 0;
-
-function shootAnimation(){
-
-    recoil = .16;
-
-    recoilSide =
-        (Math.random()-.5)*.035;
-
-    flash.intensity = 7;
-
-    setTimeout(()=>{
-        flash.intensity=0;
-    },45);
-}
-
-
-/* =========================================================
+/* =====================================================
    SHOOT
-========================================================= */
+===================================================== */
+
+let recoil=0;
+let recoilSide=0;
 
 function shoot(){
+
+    if(!gameStarted)
+        return;
 
     if(reloading)
         return;
@@ -1414,7 +1219,20 @@ function shoot(){
 
     updateAmmo();
 
-    shootAnimation();
+    recoil=.16;
+
+    recoilSide =
+        (Math.random()-.5)*.04;
+
+    flash.intensity=7;
+
+    setTimeout(
+        ()=>flash.intensity=0,
+        45
+    );
+
+
+    /* hit detection */
 
     const ray =
         new THREE.Raycaster();
@@ -1430,64 +1248,60 @@ function shoot(){
             true
         );
 
-    if(hits.length){
+    let target=null;
 
-        showHitmarker();
-    }
+    for(const hit of hits){
 
-    if(socket &&
-       socket.readyState===WebSocket.OPEN){
+        let obj=hit.object;
 
-        let target=null;
+        while(obj){
 
-        for(const hit of hits){
+            if(
+                obj.userData &&
+                obj.userData.playerId
+            ){
 
-            let obj=hit.object;
+                target =
+                    obj.userData.playerId;
 
-            while(obj){
-
-                if(
-                    obj.userData &&
-                    obj.userData.playerId
-                ){
-
-                    target =
-                        obj.userData.playerId;
-
-                    break;
-                }
-
-                obj=obj.parent;
+                break;
             }
 
-            if(target)
-                break;
+            obj=obj.parent;
         }
 
-        if(target){
+        if(target)
+            break;
+    }
 
-            socket.send(
-                JSON.stringify({
-                    type:"hit",
-                    target:target,
-                    damage:25
-                })
-            );
-        }
+    if(target &&
+       socket &&
+       socket.readyState===1){
+
+        socket.send(
+            JSON.stringify({
+                type:"hit",
+                target:target,
+                damage:25
+            })
+        );
+
+        showHitmarker();
     }
 }
 
 
-/* =========================================================
-   MOUSE
-========================================================= */
+/* =====================================================
+   SHOOT MOUSE
+===================================================== */
 
 document.addEventListener(
     "mousedown",
     e=>{
 
         if(
-            controls.isLocked &&
+            gameStarted &&
+            document.pointerLockElement &&
             e.button===0
         ){
 
@@ -1497,9 +1311,9 @@ document.addEventListener(
 );
 
 
-/* =========================================================
+/* =====================================================
    RELOAD
-========================================================= */
+===================================================== */
 
 function reload(){
 
@@ -1514,63 +1328,54 @@ function reload(){
 
     reloading=true;
 
-    const oldY =
-        weapon.position.y;
+    weapon.position.y -= .12;
+    weapon.rotation.x=-.45;
 
-    const oldX =
-        weapon.rotation.x;
+    setTimeout(
+        ()=>{
+            magazine.rotation.x=.8;
+        },
+        180
+    );
 
-    weapon.position.y =
-        oldY-.15;
+    setTimeout(
+        ()=>{
+            magazine.rotation.x=-.18;
+        },
+        550
+    );
 
-    weapon.rotation.x =
-        -.5;
+    setTimeout(
+        ()=>{
 
-    setTimeout(()=>{
+            const needed =
+                30-ammo;
 
-        magazine.rotation.x =
-            .8;
+            const take =
+                Math.min(
+                    needed,
+                    reserve
+                );
 
-    },180);
+            ammo+=take;
+            reserve-=take;
 
-    setTimeout(()=>{
+            weapon.position.y += .12;
+            weapon.rotation.x=0;
 
-        magazine.rotation.x =
-            -.18;
+            updateAmmo();
 
-    },550);
+            reloading=false;
 
-    setTimeout(()=>{
-
-        const needed =
-            30-ammo;
-
-        const take =
-            Math.min(
-                needed,
-                reserve
-            );
-
-        ammo += take;
-        reserve -= take;
-
-        updateAmmo();
-
-        weapon.position.y =
-            oldY;
-
-        weapon.rotation.x =
-            oldX;
-
-        reloading=false;
-
-    },850);
+        },
+        850
+    );
 }
 
 
-/* =========================================================
+/* =====================================================
    HITMARKER
-========================================================= */
+===================================================== */
 
 function showHitmarker(){
 
@@ -1581,23 +1386,24 @@ function showHitmarker(){
 
     h.style.opacity=1;
 
-    setTimeout(()=>{
-        h.style.opacity=0;
-    },100);
+    setTimeout(
+        ()=>h.style.opacity=0,
+        100
+    );
 }
 
 
-/* =========================================================
+/* =====================================================
    WEAPON ANIMATION
-========================================================= */
+===================================================== */
 
 function updateWeapon(){
 
-    recoil *= .78;
-    recoilSide *= .78;
+    recoil*=.78;
+    recoilSide*=.78;
 
     weapon.position.z =
-        -.85 + recoil;
+        -.85+recoil;
 
     weapon.rotation.x =
         recoil*1.8;
@@ -1624,9 +1430,9 @@ function updateWeapon(){
 }
 
 
-/* =========================================================
+/* =====================================================
    MULTIPLAYER
-========================================================= */
+===================================================== */
 
 let socket=null;
 let myId=null;
@@ -1634,10 +1440,6 @@ let myId=null;
 const otherPlayers =
     new Map();
 
-
-/* =========================================================
-   CREATE OTHER PLAYER
-========================================================= */
 
 function createOtherPlayer(p){
 
@@ -1647,7 +1449,7 @@ function createOtherPlayer(p){
     group.userData.playerId =
         p.id;
 
-    const teamMat =
+    const teamMaterial =
         new THREE.MeshStandardMaterial({
             color:
                 p.team==="a"
@@ -1658,11 +1460,9 @@ function createOtherPlayer(p){
     const body =
         new THREE.Mesh(
             new THREE.BoxGeometry(
-                .7,
-                1.2,
-                .45
+                .7,1.2,.45
             ),
-            teamMat
+            teamMaterial
         );
 
     body.position.y=.8;
@@ -1673,8 +1473,8 @@ function createOtherPlayer(p){
         new THREE.Mesh(
             new THREE.SphereGeometry(
                 .27,
-                12,
-                12
+                10,
+                10
             ),
             new THREE.MeshStandardMaterial({
                 color:0xb98562
@@ -1699,10 +1499,6 @@ function createOtherPlayer(p){
     );
 }
 
-
-/* =========================================================
-   UPDATE OTHER PLAYERS
-========================================================= */
 
 function updateOtherPlayers(list){
 
@@ -1754,9 +1550,9 @@ function updateOtherPlayers(list){
 }
 
 
-/* =========================================================
-   CONNECT SERVER
-========================================================= */
+/* =====================================================
+   SERVER
+===================================================== */
 
 function connect(){
 
@@ -1780,8 +1576,7 @@ function connect(){
 
             if(data.type==="welcome"){
 
-                myId =
-                    data.id;
+                myId=data.id;
             }
 
             if(data.type==="state"){
@@ -1795,12 +1590,8 @@ function connect(){
                         p=>p.id===myId
                     );
 
-                if(me){
-
-                    updateHealth(
-                        me.hp
-                    );
-                }
+                if(me)
+                    updateHealth(me.hp);
             }
 
             if(data.type==="round"){
@@ -1816,7 +1607,6 @@ function connect(){
 
     socket.onclose =
         ()=>{
-
             setTimeout(
                 connect,
                 3000
@@ -1827,19 +1617,17 @@ function connect(){
 connect();
 
 
-/* =========================================================
+/* =====================================================
    HEALTH
-========================================================= */
+===================================================== */
 
 function updateHealth(hp){
 
     hp =
-        Math.max(
+        THREE.MathUtils.clamp(
+            Number(hp),
             0,
-            Math.min(
-                100,
-                hp
-            )
+            100
         );
 
     document.getElementById(
@@ -1854,39 +1642,39 @@ function updateHealth(hp){
 }
 
 
-/* =========================================================
-   SEND POSITION
-========================================================= */
+/* =====================================================
+   SEND PLAYER
+===================================================== */
 
-setInterval(()=>{
+setInterval(
+    ()=>{
 
-    if(
-        socket &&
-        socket.readyState===WebSocket.OPEN &&
-        controls.isLocked
-    ){
+        if(
+            socket &&
+            socket.readyState===1 &&
+            gameStarted
+        ){
 
-        socket.send(
-            JSON.stringify({
-                type:"update",
-                x:camera.position.x,
-                z:camera.position.z,
-                rot:camera.rotation.y
-            })
-        );
-    }
+            socket.send(
+                JSON.stringify({
+                    type:"update",
+                    x:camera.position.x,
+                    z:camera.position.z,
+                    rot:yaw
+                })
+            );
+        }
 
-},50);
+    },
+    50
+);
 
 
-/* =========================================================
+/* =====================================================
    MOVEMENT
-========================================================= */
+===================================================== */
 
-const clock =
-    new THREE.Clock();
-
-function movement(){
+function move(){
 
     const dt =
         Math.min(
@@ -1900,62 +1688,203 @@ function movement(){
             ? 10
             : 6;
 
-    if(keys.ControlLeft)
+    if(
+        keys.ControlLeft ||
+        keys.ControlRight
+    )
         speed=3;
 
-    if(keys.KeyW)
-        controls.moveForward(
-            speed*dt
+    const forward =
+        new THREE.Vector3(
+            Math.sin(yaw),
+            0,
+            Math.cos(yaw)
         );
 
-    if(keys.KeyS)
-        controls.moveForward(
+    const right =
+        new THREE.Vector3(
+            Math.cos(yaw),
+            0,
+            -Math.sin(yaw)
+        );
+
+    if(keys.KeyW)
+        player.position.addScaledVector(
+            forward,
             -speed*dt
         );
 
+    if(keys.KeyS)
+        player.position.addScaledVector(
+            forward,
+            speed*dt
+        );
+
     if(keys.KeyA)
-        controls.moveRight(
+        player.position.addScaledVector(
+            right,
             -speed*dt
         );
 
     if(keys.KeyD)
-        controls.moveRight(
+        player.position.addScaledVector(
+            right,
             speed*dt
+        );
+
+    player.position.x =
+        THREE.MathUtils.clamp(
+            player.position.x,
+            -90,
+            90
+        );
+
+    player.position.z =
+        THREE.MathUtils.clamp(
+            player.position.z,
+            -90,
+            90
         );
 
     camera.position.y=1.7;
 
-    camera.position.x =
-        THREE.MathUtils.clamp(
-            camera.position.x,
-            -90,
-            90
-        );
+    camera.rotation.order="YXZ";
 
-    camera.position.z =
-        THREE.MathUtils.clamp(
-            camera.position.z,
-            -90,
-            90
-        );
+    camera.rotation.y=yaw;
+    camera.rotation.x=pitch;
 }
 
 
-/* =========================================================
-   GAME LOOP
-========================================================= */
+/* =====================================================
+   SETTINGS APPLY
+===================================================== */
 
-function animate(){
+function applySettings(){
+
+    /* pixel quality */
+
+    if(settings.graphics==="low"){
+
+        renderer.setPixelRatio(1);
+
+        sun.intensity=2.5;
+
+        scene.fog.far =
+            settings.distance==="low"
+                ? 150
+                : 220;
+
+    }
+
+    if(settings.graphics==="medium"){
+
+        renderer.setPixelRatio(
+            Math.min(
+                devicePixelRatio,
+                1.25
+            )
+        );
+
+        sun.intensity=3;
+
+        scene.fog.far =
+            settings.distance==="high"
+                ? 380
+                : 280;
+    }
+
+    if(settings.graphics==="high"){
+
+        renderer.setPixelRatio(
+            Math.min(
+                devicePixelRatio,
+                1.5
+            )
+        );
+
+        sun.intensity=3.2;
+
+        scene.fog.far=450;
+    }
+
+    renderer.shadowMap.enabled =
+        settings.shadows &&
+        settings.graphics!=="low";
+}
+
+
+/* =====================================================
+   FPS
+===================================================== */
+
+let frameCount=0;
+let fpsTime=performance.now();
+
+function updateFPS(){
+
+    frameCount++;
+
+    const now =
+        performance.now();
+
+    if(now-fpsTime>=1000){
+
+        const fps =
+            Math.round(
+                frameCount/
+                ((now-fpsTime)/1000)
+            );
+
+        document.getElementById(
+            "fps"
+        ).textContent =
+            "FPS: "+fps;
+
+        frameCount=0;
+        fpsTime=now;
+    }
+}
+
+
+/* =====================================================
+   GAME LOOP
+===================================================== */
+
+const clock =
+    new THREE.Clock();
+
+let gameStarted=false;
+
+let lastFrame=0;
+
+function animate(time){
 
     requestAnimationFrame(
         animate
     );
 
-    if(controls.isLocked){
+    const limit =
+        settings.fps;
 
-        movement();
+    if(limit>0){
 
+        const interval =
+            1000/limit;
+
+        if(
+            time-lastFrame<
+            interval
+        )
+            return;
+
+        lastFrame=time;
+    }
+
+    if(gameStarted){
+
+        move();
         updateWeapon();
+        updateFPS();
     }
 
     renderer.render(
@@ -1964,28 +1893,129 @@ function animate(){
     );
 }
 
-animate();
+applySettings();
+
+requestAnimationFrame(
+    animate
+);
 
 
-/* =========================================================
+/* =====================================================
    PLAY
-========================================================= */
+===================================================== */
 
 document.getElementById(
     "play"
 ).onclick=()=>{
 
+    gameStarted=true;
+
     document.getElementById(
         "menu"
     ).style.display="none";
 
-    controls.lock();
+    document.getElementById(
+        "hud"
+    ).style.display="block";
+
+    document.body.requestPointerLock();
 };
 
 
-/* =========================================================
+/* =====================================================
+   SETTINGS MENU
+===================================================== */
+
+document.getElementById(
+    "settingsButton"
+).onclick=()=>{
+
+    document.getElementById(
+        "settings"
+    ).style.display="block";
+};
+
+
+document.getElementById(
+    "closeSettings"
+).onclick=()=>{
+
+    saveSettings();
+
+    document.getElementById(
+        "settings"
+    ).style.display="none";
+};
+
+
+/* save settings immediately */
+
+document.getElementById(
+    "graphics"
+).onchange=saveSettings;
+
+document.getElementById(
+    "fpsLimit"
+).onchange=saveSettings;
+
+document.getElementById(
+    "shadows"
+).onchange=saveSettings;
+
+document.getElementById(
+    "distance"
+).onchange=saveSettings;
+
+
+/* =====================================================
+   ESC / EXIT
+===================================================== */
+
+function exitGame(){
+
+    if(!gameStarted)
+        return;
+
+    gameStarted=false;
+
+    document.exitPointerLock();
+
+    document.getElementById(
+        "hud"
+    ).style.display="none";
+
+    document.getElementById(
+        "menu"
+    ).style.display="flex";
+}
+
+
+document.addEventListener(
+    "pointerlockchange",
+    ()=>{
+
+        if(
+            !document.pointerLockElement &&
+            gameStarted
+        ){
+
+            gameStarted=false;
+
+            document.getElementById(
+                "hud"
+            ).style.display="none";
+
+            document.getElementById(
+                "menu"
+            ).style.display="flex";
+        }
+    }
+);
+
+
+/* =====================================================
    RESIZE
-========================================================= */
+===================================================== */
 
 window.addEventListener(
     "resize",
@@ -2008,3 +2038,4 @@ window.addEventListener(
 
 </body>
 </html>
+```
