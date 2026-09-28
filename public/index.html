@@ -2,8 +2,8 @@
 <html lang="cs">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Tactical Desert</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Tactical Desert FPS</title>
 
 <style>
 *{
@@ -17,12 +17,14 @@ html,body{
     height:100%;
     overflow:hidden;
     background:#111;
-    font-family:Arial,Helvetica,sans-serif;
+    font-family:Arial,sans-serif;
 }
 
 canvas{
     display:block;
 }
+
+/* ================= MENU ================= */
 
 #menu{
     position:fixed;
@@ -30,47 +32,49 @@ canvas{
     z-index:100;
     display:flex;
     flex-direction:column;
-    justify-content:center;
     align-items:center;
+    justify-content:center;
     background:
         linear-gradient(
             rgba(0,0,0,.35),
             rgba(0,0,0,.8)
         ),
-        radial-gradient(
-            circle,
-            #9c7346,
-            #211a14 75%
+        linear-gradient(
+            135deg,
+            #a87842,
+            #211914
         );
     color:white;
 }
 
 #menu h1{
+    margin:0;
     font-size:58px;
     letter-spacing:7px;
-    margin:0;
-    text-shadow:0 6px 20px #000;
+    text-shadow:0 5px 20px #000;
 }
 
 #menu p{
     color:#ccc;
-    margin:10px 0 35px;
+    margin:8px 0 35px;
 }
 
-.menuButton{
+.menuBtn{
     width:280px;
     padding:16px;
     margin:6px;
     border:1px solid #777;
-    background:#181818;
+    background:#191919;
     color:white;
     font-size:18px;
     cursor:pointer;
 }
 
-.menuButton:hover{
-    background:#383838;
+.menuBtn:hover{
+    background:#8a5d32;
 }
+
+/* ================= SETTINGS ================= */
 
 #settings{
     position:fixed;
@@ -79,7 +83,7 @@ canvas{
     display:none;
     align-items:center;
     justify-content:center;
-    background:rgba(0,0,0,.85);
+    background:rgba(0,0,0,.86);
 }
 
 .panel{
@@ -87,9 +91,8 @@ canvas{
     max-width:92%;
     padding:28px;
     background:#181818;
-    border:1px solid #555;
     color:white;
-    box-shadow:0 20px 70px #000;
+    border:1px solid #555;
 }
 
 .panel h2{
@@ -97,35 +100,36 @@ canvas{
 }
 
 .setting{
-    margin:20px 0;
+    margin:18px 0;
 }
 
 .setting label{
     display:block;
-    margin-bottom:8px;
     color:#aaa;
+    margin-bottom:7px;
 }
 
 .setting button{
     padding:9px 13px;
     margin:2px;
+    background:#252525;
     border:1px solid #555;
-    background:#242424;
     color:white;
     cursor:pointer;
 }
 
-.setting button:hover,
 .setting button.selected{
-    background:#b2783d;
+    background:#9a6638;
 }
+
+/* ================= HUD ================= */
 
 #hud{
     position:fixed;
     inset:0;
     z-index:50;
-    pointer-events:none;
     display:none;
+    pointer-events:none;
     color:white;
 }
 
@@ -133,53 +137,53 @@ canvas{
     position:absolute;
     left:50%;
     top:50%;
-    width:18px;
-    height:18px;
+    width:20px;
+    height:20px;
     transform:translate(-50%,-50%);
 }
 
-#crosshair span{
+#crosshair div{
     position:absolute;
     background:white;
-    box-shadow:0 0 2px #000;
-}
-
-#crosshair .v{
-    width:2px;
-    height:18px;
-    left:8px;
-    top:0;
+    box-shadow:0 0 3px #000;
 }
 
 #crosshair .h{
     width:18px;
     height:2px;
-    left:0;
-    top:8px;
+    top:9px;
+    left:1px;
 }
 
-#bottomLeft{
+#crosshair .v{
+    width:2px;
+    height:18px;
+    top:1px;
+    left:9px;
+}
+
+#hp{
     position:absolute;
-    bottom:20px;
     left:22px;
-    font-size:24px;
+    bottom:22px;
+    font-size:25px;
     text-shadow:2px 2px 5px #000;
 }
 
 #ammo{
     position:absolute;
-    bottom:20px;
     right:25px;
+    bottom:20px;
     font-size:30px;
     text-shadow:2px 2px 5px #000;
 }
 
-#top{
+#score{
     position:absolute;
     top:15px;
     left:50%;
     transform:translateX(-50%);
-    font-size:19px;
+    font-size:18px;
     text-shadow:2px 2px 5px #000;
 }
 
@@ -188,220 +192,35 @@ canvas{
     top:12px;
     right:15px;
     font-size:13px;
-    color:#ddd;
 }
 
-#location{
+#area{
     position:absolute;
-    bottom:72px;
+    bottom:70px;
     left:50%;
     transform:translateX(-50%);
     font-size:14px;
     text-shadow:2px 2px 5px #000;
 }
 
-#reload{
+#reloadText{
     position:absolute;
+    bottom:20%;
     left:50%;
-    bottom:18%;
     transform:translateX(-50%);
-    font-size:18px;
     display:none;
+    font-size:18px;
     text-shadow:2px 2px 5px #000;
 }
 
-/* =========================
-   WEAPON
-========================= */
-
-#weapon{
-    position:absolute;
-    right:3%;
-    bottom:-5%;
-    width:470px;
-    height:370px;
-    transform-origin:85% 90%;
-    filter:drop-shadow(0 12px 10px rgba(0,0,0,.6));
-}
-
-.warm{
-    position:absolute;
-    background:linear-gradient(
-        120deg,
-        #242424,
-        #111
-    );
-}
-
-#rifleReceiver{
-    width:245px;
-    height:74px;
-    right:95px;
-    top:82px;
-    transform:rotate(-7deg);
-    border-radius:5px 12px 8px 5px;
-}
-
-#rifleTop{
-    width:190px;
-    height:13px;
-    right:122px;
-    top:68px;
-    transform:rotate(-7deg);
-    border-radius:5px;
-}
-
-#rifleBarrel{
-    width:155px;
-    height:18px;
-    right:-8px;
-    top:98px;
-    transform:rotate(-7deg);
-    border-radius:0 10px 10px 0;
-}
-
-#rifleMuzzle{
-    width:24px;
-    height:25px;
-    right:-18px;
-    top:95px;
-    transform:rotate(-7deg);
-    background:#0c0c0c;
-}
-
-#rifleHandguard{
-    width:155px;
-    height:45px;
-    right:4px;
-    top:105px;
-    transform:rotate(-7deg);
-    background:
-        repeating-linear-gradient(
-            90deg,
-            #1b1b1b 0 9px,
-            #303030 10px 12px
-        );
-}
-
-#rifleMagazine{
-    width:49px;
-    height:130px;
-    right:188px;
-    top:135px;
-    transform:rotate(12deg);
-    border-radius:3px 3px 8px 8px;
-}
-
-#rifleGrip{
-    width:48px;
-    height:92px;
-    right:120px;
-    top:137px;
-    transform:rotate(-13deg);
-    border-radius:4px 4px 15px 15px;
-}
-
-#rifleStock{
-    width:120px;
-    height:58px;
-    right:315px;
-    top:74px;
-    transform:rotate(-11deg);
-    border-radius:10px 2px 2px 10px;
-}
-
-#rifleSight{
-    width:50px;
-    height:12px;
-    right:242px;
-    top:54px;
-    background:#111;
-}
-
-.hand{
-    position:absolute;
-    background:#b8784d;
-    border-radius:35px;
-    box-shadow:
-        inset -8px -8px 12px rgba(0,0,0,.25);
-}
-
-.hand:after{
-    content:"";
-    position:absolute;
-    inset:9px;
-    background:
-        linear-gradient(
-            135deg,
-            #292929,
-            #111
-        );
-    border-radius:25px;
-}
-
-#handLeft{
-    width:104px;
-    height:125px;
-    right:194px;
-    top:164px;
-    transform:rotate(-27deg);
-}
-
-#handRight{
-    width:110px;
-    height:130px;
-    right:62px;
-    top:143px;
-    transform:rotate(-46deg);
-}
-
-#sleeveLeft{
-    position:absolute;
-    width:105px;
-    height:145px;
-    right:270px;
-    top:225px;
-    background:#242525;
-    transform:rotate(-20deg);
-    border-radius:20px;
-}
-
-#sleeveRight{
-    position:absolute;
-    width:110px;
-    height:145px;
-    right:5px;
-    top:220px;
-    background:#242525;
-    transform:rotate(-40deg);
-    border-radius:20px;
-}
-
-#flash{
-    position:absolute;
-    right:-60px;
-    top:72px;
-    width:100px;
-    height:100px;
-    display:none;
-    background:
-        radial-gradient(
-            circle,
-            white 0 12%,
-            #ffe47a 20%,
-            #ff9d24 45%,
-            transparent 70%
-        );
-}
-
-/* ========================= */
+/* ================= HITMARKER ================= */
 
 #hitmarker{
     position:absolute;
     left:50%;
     top:50%;
-    width:35px;
-    height:35px;
+    width:30px;
+    height:30px;
     transform:translate(-50%,-50%);
     display:none;
 }
@@ -410,8 +229,11 @@ canvas{
 #hitmarker:after{
     content:"";
     position:absolute;
-    inset:8px;
-    border:2px solid white;
+    left:13px;
+    top:2px;
+    width:2px;
+    height:26px;
+    background:white;
 }
 
 #hitmarker:before{
@@ -421,23 +243,287 @@ canvas{
 #hitmarker:after{
     transform:rotate(-45deg);
 }
+
+/* ================= WEAPON ================= */
+
+/*
+   DŮLEŽITÉ:
+   Weapon je natočený rovně s kamerou.
+   Hlaveň vede po ose Z směrem dopředu.
+*/
+
+#weapon{
+    position:absolute;
+    right:1%;
+    bottom:-4%;
+    width:500px;
+    height:400px;
+    pointer-events:none;
+    transform-origin:center bottom;
+    filter:drop-shadow(0 12px 10px rgba(0,0,0,.55));
+}
+
+/* rukávy */
+
+.sleeve{
+    position:absolute;
+    background:linear-gradient(
+        145deg,
+        #343733,
+        #171918
+    );
+    border-radius:25px;
+}
+
+#sleeve1{
+    width:120px;
+    height:170px;
+    right:270px;
+    top:230px;
+    transform:rotate(-18deg);
+}
+
+#sleeve2{
+    width:120px;
+    height:170px;
+    right:30px;
+    top:220px;
+    transform:rotate(20deg);
+}
+
+/* ruce */
+
+.hand{
+    position:absolute;
+    width:100px;
+    height:115px;
+    background:linear-gradient(
+        145deg,
+        #c58b60,
+        #875634
+    );
+    border-radius:45px;
+    z-index:4;
+}
+
+#hand1{
+    right:245px;
+    top:175px;
+    transform:rotate(-14deg);
+}
+
+#hand2{
+    right:105px;
+    top:165px;
+    transform:rotate(18deg);
+}
+
+/* prsty */
+
+.hand:after{
+    content:"";
+    position:absolute;
+    width:70px;
+    height:38px;
+    left:15px;
+    top:18px;
+    border-radius:25px;
+    background:#a96d47;
+}
+
+/* ================= RIFLE ================= */
+
+/*
+   Celá zbraň je orientovaná rovně.
+*/
+
+#rifleBody{
+    position:absolute;
+    right:115px;
+    top:125px;
+    width:245px;
+    height:62px;
+    background:
+        linear-gradient(
+            #303231,
+            #111
+        );
+    border-radius:6px;
+    transform:rotate(-2deg);
+    z-index:3;
+}
+
+#rifleTop{
+    position:absolute;
+    right:130px;
+    top:112px;
+    width:220px;
+    height:12px;
+    background:#171918;
+    border-radius:5px;
+    z-index:5;
+}
+
+#rifleRail{
+    position:absolute;
+    right:160px;
+    top:103px;
+    width:145px;
+    height:9px;
+    background:#0b0c0c;
+    z-index:5;
+}
+
+/*
+   Hlaveň vede vodorovně.
+*/
+
+#barrel{
+    position:absolute;
+    right:-5px;
+    top:143px;
+    width:170px;
+    height:18px;
+    background:linear-gradient(
+        #252727,
+        #080909
+    );
+    border-radius:2px 15px 15px 2px;
+    z-index:2;
+}
+
+#muzzle{
+    position:absolute;
+    right:-18px;
+    top:139px;
+    width:30px;
+    height:27px;
+    background:#080909;
+    border-radius:4px;
+    z-index:3;
+}
+
+/* zásobník */
+
+#mag{
+    position:absolute;
+    right:230px;
+    top:175px;
+    width:48px;
+    height:120px;
+    background:linear-gradient(
+        90deg,
+        #111,
+        #303231,
+        #111
+    );
+    border-radius:4px 4px 12px 12px;
+    transform:rotate(8deg);
+    z-index:2;
+}
+
+/* grip */
+
+#grip{
+    position:absolute;
+    right:142px;
+    top:175px;
+    width:48px;
+    height:100px;
+    background:#151716;
+    border-radius:5px 5px 14px 14px;
+    transform:rotate(-8deg);
+    z-index:2;
+}
+
+/* pažba */
+
+#stock{
+    position:absolute;
+    right:325px;
+    top:117px;
+    width:125px;
+    height:65px;
+    background:linear-gradient(
+        #292b2a,
+        #111
+    );
+    border-radius:14px 3px 3px 14px;
+    transform:rotate(-5deg);
+}
+
+/* hledí */
+
+#sight{
+    position:absolute;
+    right:275px;
+    top:94px;
+    width:45px;
+    height:16px;
+    background:#0c0d0d;
+    z-index:6;
+}
+
+/* muzzle flash */
+
+#flash{
+    position:absolute;
+    right:-70px;
+    top:102px;
+    width:120px;
+    height:120px;
+    display:none;
+    background:
+        radial-gradient(
+            circle,
+            white 0 10%,
+            #ffe98b 20%,
+            #ff9c27 42%,
+            transparent 70%
+        );
+}
+
+/* ================= MOBILE WARNING ================= */
+
+@media(max-width:700px){
+    #weapon{
+        transform:scale(.65);
+        right:-70px;
+        bottom:-70px;
+    }
+
+    #menu h1{
+        font-size:35px;
+    }
+}
 </style>
 </head>
 
 <body>
 
+<!-- ================= MENU ================= -->
+
 <div id="menu">
+
     <h1>TACTICAL DESERT</h1>
+
     <p>TACTICAL FPS</p>
 
-    <button class="menuButton" id="play">
+    <button
+        class="menuBtn"
+        id="play">
         PLAY
     </button>
 
-    <button class="menuButton" id="settingsButton">
+    <button
+        class="menuBtn"
+        id="openSettings">
         SETTINGS
     </button>
+
 </div>
+
+<!-- ================= SETTINGS ================= -->
 
 <div id="settings">
 
@@ -446,39 +532,59 @@ canvas{
         <h2>SETTINGS</h2>
 
         <div class="setting">
-            <label>Graphics</label>
+            <label>GRAPHICS</label>
 
-            <button data-g="low">LOW</button>
-            <button data-g="medium">MEDIUM</button>
-            <button data-g="high">HIGH</button>
+            <button data-graphics="low">
+                LOW
+            </button>
+
+            <button data-graphics="medium">
+                MEDIUM
+            </button>
+
+            <button data-graphics="high">
+                HIGH
+            </button>
         </div>
 
         <div class="setting">
             <label>FPS LIMIT</label>
 
-            <button data-fps="30">30</button>
-            <button data-fps="60">60</button>
-            <button data-fps="120">120</button>
-            <button data-fps="0">UNLIMITED</button>
-        </div>
+            <button data-fps="30">
+                30
+            </button>
 
-        <div class="setting">
-            <label>SHADOWS</label>
+            <button data-fps="60">
+                60
+            </button>
 
-            <button data-shadow="0">OFF</button>
-            <button data-shadow="1">ON</button>
+            <button data-fps="120">
+                120
+            </button>
+
+            <button data-fps="0">
+                UNLIMITED
+            </button>
         </div>
 
         <div class="setting">
             <label>VIEW DISTANCE</label>
 
-            <button data-distance="low">LOW</button>
-            <button data-distance="medium">MEDIUM</button>
-            <button data-distance="high">HIGH</button>
+            <button data-distance="low">
+                LOW
+            </button>
+
+            <button data-distance="medium">
+                MEDIUM
+            </button>
+
+            <button data-distance="high">
+                HIGH
+            </button>
         </div>
 
         <button
-            class="menuButton"
+            class="menuBtn"
             id="closeSettings">
             BACK
         </button>
@@ -487,105 +593,84 @@ canvas{
 
 </div>
 
+<!-- ================= HUD ================= -->
+
 <div id="hud">
 
     <div id="crosshair">
-        <span class="v"></span>
-        <span class="h"></span>
+        <div class="h"></div>
+        <div class="v"></div>
     </div>
 
     <div id="hitmarker"></div>
 
-    <div id="top">
-        <b id="score">A 0 : 0 B</b>
+    <div id="score">
+        A 0 : 0 B
     </div>
 
     <div id="fps">
         FPS: 0
     </div>
 
-    <div id="bottomLeft">
-        HP: <span id="hp">100</span>
+    <div id="hp">
+        HP: 100
     </div>
 
     <div id="ammo">
-        <span id="ammoNumber">30</span> / 90
+        <span id="ammoCount">30</span> / 90
     </div>
 
-    <div id="location">
+    <div id="area">
         MID
     </div>
 
-    <div id="reload">
+    <div id="reloadText">
         RELOADING...
     </div>
+
+    <!-- ================= WEAPON ================= -->
 
     <div id="weapon">
 
         <div id="flash"></div>
 
         <div
-            id="sleeveLeft">
+            class="sleeve"
+            id="sleeve1">
         </div>
 
         <div
-            id="sleeveRight">
+            class="sleeve"
+            id="sleeve2">
         </div>
 
         <div
-            id="rifleStock"
-            class="warm">
+            class="hand"
+            id="hand1">
         </div>
 
         <div
-            id="rifleReceiver"
-            class="warm">
+            class="hand"
+            id="hand2">
         </div>
 
-        <div
-            id="rifleTop"
-            class="warm">
-        </div>
+        <div id="stock"></div>
 
-        <div
-            id="rifleHandguard"
-            class="warm">
-        </div>
+        <div id="rifleBody"></div>
 
-        <div
-            id="rifleBarrel"
-            class="warm">
-        </div>
+        <div id="rifleTop"></div>
 
-        <div
-            id="rifleMuzzle"
-            class="warm">
-        </div>
+        <div id="rifleRail"></div>
 
-        <div
-            id="rifleMagazine"
-            class="warm">
-        </div>
+        <div id="barrel"></div>
 
-        <div
-            id="rifleGrip"
-            class="warm">
-        </div>
+        <div id="muzzle"></div>
 
-        <div
-            id="rifleSight"
-            class="warm">
-        </div>
+        <div id="mag"></div>
 
-        <div
-            id="handLeft"
-            class="hand">
-        </div>
+        <div id="grip"></div>
 
-        <div
-            id="handRight"
-            class="hand">
-        </div>
+        <div id="sight"></div>
 
     </div>
 
@@ -596,31 +681,32 @@ canvas{
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js";
 
-/* =========================================================
+/* =====================================================
    SETTINGS
-========================================================= */
+===================================================== */
 
-let settings = {
+let settings={
     graphics:"low",
     fps:60,
-    shadows:false,
     distance:"medium"
 };
 
 try{
 
-    const saved =
+    const saved=
         JSON.parse(
             localStorage.getItem(
                 "tacticalSettings"
             )
         );
 
-    if(saved)
+    if(saved){
+
         settings={
             ...settings,
             ...saved
         };
+    }
 
 }catch(e){}
 
@@ -632,27 +718,39 @@ function saveSettings(){
     );
 }
 
-/* =========================================================
-   SCENE
-========================================================= */
+/* =====================================================
+   THREE.JS
+===================================================== */
 
-const scene =
+const scene=
     new THREE.Scene();
 
-scene.background =
+scene.background=
     new THREE.Color(
-        0xb9915c
+        0xc49a67
     );
 
-const camera =
+/*
+ IMPORTANT:
+ Fog je vytvořen hned.
+*/
+
+scene.fog=
+    new THREE.Fog(
+        0xc49a67,
+        120,
+        450
+    );
+
+const camera=
     new THREE.PerspectiveCamera(
         75,
-        innerWidth / innerHeight,
+        innerWidth/innerHeight,
         .05,
         800
     );
 
-const renderer =
+const renderer=
     new THREE.WebGLRenderer({
         antialias:false,
         powerPreference:
@@ -670,19 +768,19 @@ document.body.appendChild(
     renderer.domElement
 );
 
-/* =========================================================
+/* =====================================================
    LIGHT
-========================================================= */
+===================================================== */
 
-const sun =
+const sun=
     new THREE.DirectionalLight(
-        0xffd6a0,
+        0xffd5a0,
         2
     );
 
 sun.position.set(
-    -180,
-    260,
+    -150,
+    250,
     100
 );
 
@@ -690,87 +788,81 @@ scene.add(sun);
 
 scene.add(
     new THREE.HemisphereLight(
-        0xffd8a5,
-        0x473a2e,
-        1.2
+        0xffd8a8,
+        0x423529,
+        1.25
     )
 );
 
-/* =========================================================
+/* =====================================================
    MATERIALS
-========================================================= */
+===================================================== */
 
-const mat = {
+const materials={
 
     sand:
         new THREE.MeshLambertMaterial({
-            color:0xc6965d
+            color:0xc59661
         }),
 
     road:
         new THREE.MeshLambertMaterial({
-            color:0x8d633e
+            color:0x806043
         }),
 
     wall:
         new THREE.MeshLambertMaterial({
-            color:0xb77e4c
+            color:0xb47c4b
         }),
 
-    wall2:
+    wallLight:
         new THREE.MeshLambertMaterial({
-            color:0xd0a06b
+            color:0xd09b66
         }),
 
     dark:
         new THREE.MeshLambertMaterial({
-            color:0x42372f
+            color:0x41362c
         }),
 
     wood:
         new THREE.MeshLambertMaterial({
-            color:0x704422
+            color:0x68411f
         }),
 
     metal:
         new THREE.MeshLambertMaterial({
-            color:0x505050
-        }),
-
-    cloth:
-        new THREE.MeshLambertMaterial({
-            color:0x30322e
+            color:0x444747
         }),
 
     glass:
         new THREE.MeshLambertMaterial({
-            color:0x39464b
+            color:0x35474c
         }),
 
-    plant:
+    green:
         new THREE.MeshLambertMaterial({
-            color:0x526044
+            color:0x4d6048
         })
 };
 
-/* =========================================================
-   OBJECT HELPERS
-========================================================= */
+/* =====================================================
+   MAP
+===================================================== */
 
 const obstacles=[];
 
-function cube(
+function box(
     x,y,z,
-    sx,sy,sz,
+    w,h,d,
     material,
-    obstacle=true,
-    rotation=0
+    collision=true
 ){
 
-    const mesh =
+    const mesh=
         new THREE.Mesh(
             new THREE.BoxGeometry(
-                sx,sy,sz
+                w,h,d
             ),
             material
         );
@@ -779,31 +871,28 @@ function cube(
         x,y,z
     );
 
-    mesh.rotation.y=
-        rotation;
-
     scene.add(mesh);
 
-    if(obstacle){
+    if(collision){
 
         obstacles.push({
-            x:x,
-            z:z,
-            w:sx,
-            d:sz
+            x,
+            z,
+            w,
+            d
         });
     }
 
     return mesh;
 }
 
-function cyl(
+function cylinder(
     x,y,z,
     radius,height,
     material
 ){
 
-    const mesh =
+    const mesh=
         new THREE.Mesh(
             new THREE.CylinderGeometry(
                 radius,
@@ -823,142 +912,124 @@ function cyl(
     return mesh;
 }
 
-/* =========================================================
-   GROUND
-========================================================= */
+/* ================= GROUND ================= */
 
-cube(
-    0,
-    -2,
-    0,
-    620,
-    4,
-    620,
-    mat.sand,
+box(
+    0,-2,0,
+    620,4,620,
+    materials.sand,
     false
 );
 
-/* =========================================================
-   ROADS
-========================================================= */
+/* ================= MAIN ROADS ================= */
 
-cube(
-    0,
-    .03,
-    0,
-    62,
-    .1,
-    560,
-    mat.road,
+box(
+    0,.05,0,
+    70,.1,590,
+    materials.road,
     false
 );
 
-cube(
-    0,
-    .04,
-    0,
-    560,
-    .1,
-    62,
-    mat.road,
+box(
+    0,.06,0,
+    590,.1,70,
+    materials.road,
     false
 );
 
-cube(
-    0,
-    .05,
-    -175,
-    300,
-    .1,
-    48,
-    mat.road,
+/* ================= SIDE ROADS ================= */
+
+box(
+    -190,.07,0,
+    70,.1,500,
+    materials.road,
     false
 );
 
-cube(
-    0,
-    .05,
-    175,
-    300,
-    .1,
-    48,
-    mat.road,
+box(
+    190,.07,0,
+    70,.1,500,
+    materials.road,
     false
 );
 
-/* =========================================================
-   OUTER WALLS
-========================================================= */
+/* ================= OUTER WALL ================= */
 
-cube(
+box(
     0,18,-305,
     620,36,10,
-    mat.wall
+    materials.wall
 );
 
-cube(
+box(
     0,18,305,
     620,36,10,
-    mat.wall
+    materials.wall
 );
 
-cube(
+box(
     -305,18,0,
     10,36,620,
-    mat.wall
+    materials.wall
 );
 
-cube(
+box(
     305,18,0,
     10,36,620,
-    mat.wall
+    materials.wall
 );
 
-/* =========================================================
-   BUILDING FUNCTION
-========================================================= */
+/* =====================================================
+   BUILDINGS
+===================================================== */
 
 function building(
-    x,z,
-    w,d,
-    h=22
+    x,z,w,d,h=22
 ){
 
-    cube(
+    box(
         x,
         h/2,
         z,
         w,
         h,
         d,
-        mat.wall
+        materials.wall
     );
 
-    cube(
+    /*
+      střechy
+    */
+
+    box(
         x,
-        h+.4,
+        h+.5,
         z,
         w+2,
-        .8,
-        d+2,
-        mat.wall2,
-        false
-    );
-
-    /* door */
-
-    cube(
-        x-w*.2,
-        5,
-        z-d/2-.4,
-        6,
-        10,
         1,
-        mat.dark,
+        d+2,
+        materials.wallLight,
         false
     );
 
-    /* windows */
+    /*
+      dveře
+    */
+
+    box(
+        x,
+        5,
+        z-d/2-.3,
+        7,
+        10,
+        .5,
+        materials.dark,
+        false
+    );
+
+    /*
+      okna
+    */
 
     for(
         let i=-1;
@@ -966,316 +1037,265 @@ function building(
         i++
     ){
 
-        cube(
+        box(
             x+i*w*.28,
-            h*.62,
-            z-d/2-.55,
-            6,
+            h*.65,
+            z-d/2-.4,
+            7,
             4,
             .4,
-            mat.glass,
+            materials.glass,
             false
         );
     }
 }
 
-/* =========================================================
-   A AREA
-========================================================= */
+/* ================= A SITE ================= */
 
 building(
-    -225,-235,
-    105,65,
-    25
+    -225,
+    -230,
+    110,
+    70,
+    26
 );
 
 building(
-    -145,-230,
-    55,75,
+    -150,
+    -235,
+    55,
+    80,
+    22
+);
+
+building(
+    -250,
+    -145,
+    70,
+    55,
     20
 );
 
 building(
-    -245,-145,
-    70,55,
+    -155,
+    -125,
+    65,
+    45,
     19
 );
 
-building(
-    -145,-125,
-    65,45,
-    18
-);
-
-/* =========================================================
-   B AREA
-========================================================= */
+/* ================= B SITE ================= */
 
 building(
-    225,235,
-    105,65,
-    25
+    225,
+    230,
+    110,
+    70,
+    26
 );
 
 building(
-    145,230,
-    55,75,
+    150,
+    235,
+    55,
+    80,
+    22
+);
+
+building(
+    250,
+    145,
+    70,
+    55,
     20
 );
 
 building(
-    245,145,
-    70,55,
+    155,
+    125,
+    65,
+    45,
     19
 );
 
+/* ================= LONG ================= */
+
 building(
-    145,125,
-    65,45,
-    18
+    -125,
+    -185,
+    60,
+    80,
+    21
 );
 
-/* =========================================================
-   LONG WALLS
-========================================================= */
+building(
+    125,
+    -185,
+    60,
+    80,
+    21
+);
 
-cube(
+box(
     -55,
     9,
-    -170,
-    18,
+    -180,
+    16,
     18,
     210,
-    mat.wall
+    materials.wall
 );
 
-cube(
+box(
     55,
     9,
-    -170,
-    18,
+    -180,
+    16,
     18,
     210,
-    mat.wall
+    materials.wall
 );
 
-/* LONG SIDE BUILDINGS */
+/* ================= MID ================= */
 
 building(
-    -125,-195,
-    55,80,
-    21
-);
-
-building(
-    125,-195,
-    55,80,
-    21
-);
-
-/* =========================================================
-   MID BUILDINGS
-========================================================= */
-
-building(
-    -170,0,
-    55,80,
-    20
-);
-
-building(
-    170,0,
-    55,80,
-    20
-);
-
-building(
-    -120,75,
-    45,55,
-    18
-);
-
-building(
-    120,75,
-    45,55,
-    18
-);
-
-/* =========================================================
-   SHORT
-========================================================= */
-
-cube(
-    -125,
-    7,
-    115,
-    18,
-    14,
-    120,
-    mat.wall
-);
-
-cube(
-    125,
-    7,
-    115,
-    18,
-    14,
-    120,
-    mat.wall
-);
-
-/* =========================================================
-   TUNNEL ENTRANCES
-========================================================= */
-
-function tunnel(
-    x,z,
-    length
-){
-
-    cube(
-        x-14,
-        9,
-        z,
-        12,
-        18,
-        length,
-        mat.dark
-    );
-
-    cube(
-        x+14,
-        9,
-        z,
-        12,
-        18,
-        length,
-        mat.dark
-    );
-
-    cube(
-        x,
-        19,
-        z,
-        40,
-        3,
-        length,
-        mat.wall
-    );
-}
-
-tunnel(
-    -85,
-    175,
-    100
-);
-
-tunnel(
-    85,
     -175,
-    100
+    0,
+    60,
+    90,
+    21
 );
 
-/* =========================================================
-   MID COVER
-========================================================= */
+building(
+    175,
+    0,
+    60,
+    90,
+    21
+);
+
+building(
+    -115,
+    75,
+    50,
+    55,
+    19
+);
+
+building(
+    115,
+    75,
+    50,
+    55,
+    19
+);
+
+/* ================= SHORT ================= */
+
+box(
+    -125,
+    8,
+    125,
+    20,
+    16,
+    120,
+    materials.wall
+);
+
+box(
+    125,
+    8,
+    125,
+    20,
+    16,
+    120,
+    materials.wall
+);
+
+/* ================= MID COVER ================= */
 
 for(
-    let x=-75;
-    x<=75;
-    x+=30
+    let x=-70;
+    x<=70;
+    x+=28
 ){
 
-    cube(
+    box(
         x,
         3,
+        5,
         10,
-        12,
         6,
         10,
-        mat.wall2
+        materials.wallLight
     );
 }
 
-/* =========================================================
-   BOXES
-========================================================= */
+/* ================= BOXES ================= */
 
 for(
     let i=0;
-    i<55;
+    i<65;
     i++
 ){
 
-    const x =
+    const x=
         Math.round(
             (Math.random()*500-250)/10
         )*10;
 
-    const z =
+    const z=
         Math.round(
             (Math.random()*500-250)/10
         )*10;
 
     if(
-        Math.abs(x)<40 &&
-        Math.abs(z)<40
+        Math.abs(x)<55 &&
+        Math.abs(z)<55
     )
         continue;
 
-    cube(
+    box(
         x,
         3,
         z,
         7,
         6,
         7,
-        mat.wood,
-        true,
-        Math.random()*Math.PI
+        materials.wood,
+        true
     );
 }
 
-/* =========================================================
-   BARRELS
-========================================================= */
+/* ================= BARRELS ================= */
 
 for(
     let i=0;
-    i<30;
+    i<35;
     i++
 ){
 
-    const x =
-        Math.random()*500-250;
-
-    const z =
-        Math.random()*500-250;
-
-    cyl(
-        x,
+    cylinder(
+        Math.random()*500-250,
         4,
-        z,
+        Math.random()*500-250,
         3,
         8,
-        mat.metal
+        materials.metal
     );
 }
 
-/* =========================================================
-   PALMS
-========================================================= */
+/* ================= PALMS ================= */
 
 function palm(x,z){
 
-    cyl(
+    cylinder(
         x,
         8,
         z,
-        1.4,
+        1.5,
         16,
-        mat.wood
+        materials.wood
     );
 
     if(
@@ -1289,24 +1309,22 @@ function palm(x,z){
         i++
     ){
 
-        const leaf =
-            cube(
-                x,
-                16,
-                z,
-                2,
-                1,
-                13,
-                mat.plant,
-                false,
-                i*Math.PI/3
-            );
+        box(
+            x,
+            16,
+            z,
+            2,
+            1,
+            14,
+            materials.green,
+            false
+        );
     }
 }
 
 for(
     let i=0;
-    i<22;
+    i<25;
     i++
 ){
 
@@ -1316,11 +1334,11 @@ for(
     );
 }
 
-/* =========================================================
+/* =====================================================
    PLAYER
-========================================================= */
+===================================================== */
 
-const player =
+const player=
     new THREE.Object3D();
 
 scene.add(player);
@@ -1328,7 +1346,7 @@ scene.add(player);
 player.position.set(
     -245,
     0,
-    -255
+    -250
 );
 
 player.add(camera);
@@ -1347,13 +1365,11 @@ let pitch=0;
 
 let keys={};
 
-let gameRunning=false;
+let playing=false;
 
-let walkSpeed=7;
-
-/* =========================================================
+/* =====================================================
    KEYBOARD
-========================================================= */
+===================================================== */
 
 document.addEventListener(
     "keydown",
@@ -1376,9 +1392,9 @@ document.addEventListener(
     }
 );
 
-/* =========================================================
-   360 MOUSE
-========================================================= */
+/* =====================================================
+   MOUSE LOOK
+===================================================== */
 
 document.addEventListener(
     "mousemove",
@@ -1391,16 +1407,16 @@ document.addEventListener(
             return;
 
         yaw -=
-            e.movementX * .0022;
+            e.movementX*.0022;
 
         pitch -=
-            e.movementY * .0022;
+            e.movementY*.0022;
 
-        pitch =
+        pitch=
             THREE.MathUtils.clamp(
                 pitch,
-                -1.48,
-                1.48
+                -1.5,
+                1.5
             );
 
         player.rotation.y=
@@ -1411,15 +1427,13 @@ document.addEventListener(
     }
 );
 
-/* =========================================================
+/* =====================================================
    COLLISION
-========================================================= */
+===================================================== */
 
-function blocked(
-    x,z
-){
+function collision(x,z){
 
-    const radius=2.2;
+    const r=2;
 
     for(
         const o of obstacles
@@ -1427,14 +1441,15 @@ function blocked(
 
         if(
             x >
-                o.x-o.w/2-radius &&
+                o.x-o.w/2-r &&
             x <
-                o.x+o.w/2+radius &&
+                o.x+o.w/2+r &&
             z >
-                o.z-o.d/2-radius &&
+                o.z-o.d/2-r &&
             z <
-                o.z+o.d/2+radius
+                o.z+o.d/2+r
         ){
+
             return true;
         }
     }
@@ -1442,22 +1457,25 @@ function blocked(
     return false;
 }
 
-/* =========================================================
+/* =====================================================
    MOVEMENT
-========================================================= */
+===================================================== */
 
-const clock =
+const clock=
     new THREE.Clock();
 
-function movement(){
+function move(){
 
-    const dt =
+    const dt=
         Math.min(
             clock.getDelta(),
             .05
         );
 
-    let speed=walkSpeed;
+    if(!playing)
+        return;
+
+    let speed=7;
 
     if(
         keys.ShiftLeft ||
@@ -1489,54 +1507,56 @@ function movement(){
         player.quaternion
     );
 
-    let move=
+    const direction=
         new THREE.Vector3();
 
     if(keys.KeyW)
-        move.add(forward);
+        direction.add(forward);
 
     if(keys.KeyS)
-        move.sub(forward);
+        direction.sub(forward);
 
     if(keys.KeyD)
-        move.add(right);
+        direction.add(right);
 
     if(keys.KeyA)
-        move.sub(right);
+        direction.sub(right);
 
     if(
-        move.lengthSq()>0
+        direction.lengthSq()>0
     ){
 
-        move.normalize();
+        direction.normalize();
 
-        const nx =
-            player.position.x +
-            move.x *
-            speed *
+        const nx=
+            player.position.x+
+            direction.x*
+            speed*
             dt;
 
-        const nz =
-            player.position.z +
-            move.z *
-            speed *
+        const nz=
+            player.position.z+
+            direction.z*
+            speed*
             dt;
 
         if(
-            !blocked(
+            !collision(
                 nx,
                 player.position.z
             )
         ){
+
             player.position.x=nx;
         }
 
         if(
-            !blocked(
+            !collision(
                 player.position.x,
                 nz
             )
         ){
+
             player.position.z=nz;
         }
     }
@@ -1544,25 +1564,25 @@ function movement(){
     player.position.x=
         THREE.MathUtils.clamp(
             player.position.x,
-            -290,
-            290
+            -292,
+            292
         );
 
     player.position.z=
         THREE.MathUtils.clamp(
             player.position.z,
-            -290,
-            290
+            -292,
+            292
         );
 
-    locationText();
+    updateArea();
 }
 
-/* =========================================================
-   LOCATION
-========================================================= */
+/* =====================================================
+   AREA
+===================================================== */
 
-function locationText(){
+function updateArea(){
 
     const x=
         player.position.x;
@@ -1574,50 +1594,45 @@ function locationText(){
 
     if(
         x<-150 &&
-        z<-140
+        z<-150
     )
         name="A SITE";
 
     else if(
         x>150 &&
-        z>140
+        z>150
     )
         name="B SITE";
 
     else if(
-        Math.abs(x)<70 &&
-        z<-120
+        z<-120 &&
+        Math.abs(x)<100
     )
         name="LONG";
 
     else if(
-        Math.abs(x)>120 &&
-        Math.abs(z)<120
+        z>100 &&
+        Math.abs(x)<100
     )
         name="SHORT";
 
     else if(
-        Math.abs(x)<100 &&
-        Math.abs(z)<100
+        Math.abs(x)<80 &&
+        Math.abs(z)<80
     )
         name="MID";
 
-    else if(
-        z>100
-    )
-        name="B SIDE";
-
     else
-        name="A SIDE";
+        name="SIDE";
 
     document.getElementById(
-        "location"
+        "area"
     ).textContent=name;
 }
 
-/* =========================================================
+/* =====================================================
    SHOOTING
-========================================================= */
+===================================================== */
 
 let ammo=30;
 
@@ -1627,7 +1642,7 @@ let lastShot=0;
 
 function shoot(){
 
-    if(!gameRunning)
+    if(!playing)
         return;
 
     if(reloading)
@@ -1644,7 +1659,7 @@ function shoot(){
         performance.now();
 
     if(
-        now-lastShot<110
+        now-lastShot<115
     )
         return;
 
@@ -1653,8 +1668,10 @@ function shoot(){
     ammo--;
 
     document.getElementById(
-        "ammoNumber"
+        "ammoCount"
     ).textContent=ammo;
+
+    /* muzzle flash */
 
     const flash=
         document.getElementById(
@@ -1672,6 +1689,8 @@ function shoot(){
         55
     );
 
+    /* recoil */
+
     const weapon=
         document.getElementById(
             "weapon"
@@ -1685,7 +1704,7 @@ function shoot(){
             },
             {
                 transform:
-                    "translate(-12px,9px) rotate(-2deg)"
+                    "translate(-7px,10px)"
             },
             {
                 transform:
@@ -1693,10 +1712,11 @@ function shoot(){
             }
         ],
         {
-            duration:100,
-            easing:"ease-out"
+            duration:100
         }
     );
+
+    /* ray */
 
     const ray=
         new THREE.Raycaster();
@@ -1706,14 +1726,14 @@ function shoot(){
         camera
     );
 
-    const hits=
+    const hit=
         ray.intersectObjects(
             scene.children,
             true
         );
 
     if(
-        hits.length>0
+        hit.length>0
     ){
 
         const marker=
@@ -1729,29 +1749,14 @@ function shoot(){
                 marker.style.display=
                     "none";
             },
-            80
+            70
         );
     }
 }
 
-document.addEventListener(
-    "mousedown",
-    e=>{
-
-        if(
-            e.button===0 &&
-            gameRunning &&
-            document.pointerLockElement===
-            renderer.domElement
-        ){
-            shoot();
-        }
-    }
-);
-
-/* =========================================================
+/* =====================================================
    RELOAD
-========================================================= */
+===================================================== */
 
 function reload(){
 
@@ -1764,7 +1769,7 @@ function reload(){
     reloading=true;
 
     document.getElementById(
-        "reload"
+        "reloadText"
     ).style.display=
         "block";
 
@@ -1777,23 +1782,23 @@ function reload(){
         [
             {
                 transform:
-                    "rotate(0deg)"
+                    "translate(0,0)"
             },
             {
                 transform:
-                    "rotate(12deg) translateY(35px)"
+                    "translate(30px,40px) rotate(8deg)"
             },
             {
                 transform:
-                    "rotate(-8deg)"
+                    "translate(-20px,20px) rotate(-5deg)"
             },
             {
                 transform:
-                    "rotate(0deg)"
+                    "translate(0,0)"
             }
         ],
         {
-            duration:1200
+            duration:1100
         }
     );
 
@@ -1803,24 +1808,44 @@ function reload(){
             ammo=30;
 
             document.getElementById(
-                "ammoNumber"
+                "ammoCount"
             ).textContent=ammo;
 
             document.getElementById(
-                "reload"
+                "reloadText"
             ).style.display=
                 "none";
 
             reloading=false;
 
         },
-        1200
+        1100
     );
 }
 
-/* =========================================================
+/* =====================================================
+   SHOOT CLICK
+===================================================== */
+
+document.addEventListener(
+    "mousedown",
+    e=>{
+
+        if(
+            e.button===0 &&
+            playing &&
+            document.pointerLockElement===
+            renderer.domElement
+        ){
+
+            shoot();
+        }
+    }
+);
+
+/* =====================================================
    SETTINGS
-========================================================= */
+===================================================== */
 
 function applySettings(){
 
@@ -1830,7 +1855,11 @@ function applySettings(){
 
         renderer.setPixelRatio(1);
 
-        sun.intensity=1.7;
+        scene.fog.near=80;
+        scene.fog.far=
+            settings.distance==="low"
+            ? 250
+            : 400;
 
     }else if(
         settings.graphics==="medium"
@@ -1843,56 +1872,44 @@ function applySettings(){
             )
         );
 
-        sun.intensity=2;
+        scene.fog.near=120;
+        scene.fog.far=
+            settings.distance==="low"
+            ? 300
+            : 500;
 
     }else{
 
         renderer.setPixelRatio(
             Math.min(
                 devicePixelRatio,
-                1.6
+                1.5
             )
         );
 
-        sun.intensity=2.2;
-    }
-
-    if(
-        settings.distance==="low"
-    ){
-
-        scene.fog.near=60;
-        scene.fog.far=250;
-
-    }else if(
-        settings.distance==="medium"
-    ){
-
-        scene.fog.near=120;
-        scene.fog.far=450;
-
-    }else{
-
-        scene.fog.near=180;
-        scene.fog.far=700;
+        scene.fog.near=160;
+        scene.fog.far=
+            settings.distance==="high"
+            ? 700
+            : 500;
     }
 
     saveSettings();
 
-    updateSettingsButtons();
+    updateButtons();
 }
 
-function updateSettingsButtons(){
+function updateButtons(){
 
     document
         .querySelectorAll(
-            "[data-g]"
+            "[data-graphics]"
         )
         .forEach(
             b=>{
                 b.classList.toggle(
                     "selected",
-                    b.dataset.g===
+                    b.dataset.graphics===
                     settings.graphics
                 );
             }
@@ -1916,24 +1933,6 @@ function updateSettingsButtons(){
 
     document
         .querySelectorAll(
-            "[data-shadow]"
-        )
-        .forEach(
-            b=>{
-                b.classList.toggle(
-                    "selected",
-                    Number(
-                        b.dataset.shadow
-                    )===
-                    Number(
-                        settings.shadows
-                    )
-                );
-            }
-        );
-
-    document
-        .querySelectorAll(
             "[data-distance]"
         )
         .forEach(
@@ -1951,7 +1950,7 @@ function updateSettingsButtons(){
 
 document
     .querySelectorAll(
-        "[data-g]"
+        "[data-graphics]"
     )
     .forEach(
         b=>{
@@ -1959,7 +1958,7 @@ document
             b.onclick=()=>{
 
                 settings.graphics=
-                    b.dataset.g;
+                    b.dataset.graphics;
 
                 applySettings();
             };
@@ -1987,27 +1986,6 @@ document
         }
     );
 
-/* shadows */
-
-document
-    .querySelectorAll(
-        "[data-shadow]"
-    )
-    .forEach(
-        b=>{
-
-            b.onclick=()=>{
-
-                settings.shadows=
-                    Number(
-                        b.dataset.shadow
-                    );
-
-                applySettings();
-            };
-        }
-    );
-
 /* distance */
 
 document
@@ -2027,12 +2005,12 @@ document
         }
     );
 
-/* =========================================================
+/* =====================================================
    MENU
-========================================================= */
+===================================================== */
 
 document.getElementById(
-    "settingsButton"
+    "openSettings"
 ).onclick=()=>{
 
     document.getElementById(
@@ -2040,7 +2018,7 @@ document.getElementById(
     ).style.display=
         "flex";
 
-    updateSettingsButtons();
+    updateButtons();
 };
 
 document.getElementById(
@@ -2053,15 +2031,15 @@ document.getElementById(
         "none";
 };
 
-/* =========================================================
+/* =====================================================
    PLAY
-========================================================= */
+===================================================== */
 
 document.getElementById(
     "play"
 ).onclick=async()=>{
 
-    gameRunning=true;
+    playing=true;
 
     document.getElementById(
         "menu"
@@ -2076,7 +2054,7 @@ document.getElementById(
     player.position.set(
         -245,
         0,
-        -255
+        -250
     );
 
     yaw=0;
@@ -2087,20 +2065,21 @@ document.getElementById(
 
     try{
 
-        await renderer.domElement
+        await renderer
+            .domElement
             .requestPointerLock();
 
-    }catch(e){
+    }catch(error){
+
         console.log(
-            "Pointer lock:",
-            e
+            error
         );
     }
 };
 
-/* =========================================================
+/* =====================================================
    ESC
-========================================================= */
+===================================================== */
 
 document.addEventListener(
     "pointerlockchange",
@@ -2111,36 +2090,36 @@ document.addEventListener(
             renderer.domElement
         ){
 
-            if(gameRunning){
+            if(playing){
 
-                gameRunning=false;
-
-                document.getElementById(
-                    "menu"
-                ).style.display=
-                    "flex";
+                playing=false;
 
                 document.getElementById(
                     "hud"
                 ).style.display=
                     "none";
+
+                document.getElementById(
+                    "menu"
+                ).style.display=
+                    "flex";
             }
         }
     }
 );
 
-/* =========================================================
+/* =====================================================
    FPS
-========================================================= */
+===================================================== */
 
 let frames=0;
 
-let fpsStart=
+let fpsTimer=
     performance.now();
 
-let lastFrame=0;
+let lastRender=0;
 
-function updateFPS(){
+function showFPS(){
 
     frames++;
 
@@ -2148,7 +2127,7 @@ function updateFPS(){
         performance.now();
 
     if(
-        now-fpsStart>=1000
+        now-fpsTimer>=1000
     ){
 
         document.getElementById(
@@ -2158,13 +2137,13 @@ function updateFPS(){
 
         frames=0;
 
-        fpsStart=now;
+        fpsTimer=now;
     }
 }
 
-/* =========================================================
+/* =====================================================
    LOOP
-========================================================= */
+===================================================== */
 
 function animate(time){
 
@@ -2180,18 +2159,17 @@ function animate(time){
             1000/settings.fps;
 
         if(
-            time-lastFrame<
+            time-lastRender<
             interval
         )
             return;
 
-        lastFrame=time;
+        lastRender=time;
     }
 
-    if(gameRunning)
-        movement();
+    move();
 
-    updateFPS();
+    showFPS();
 
     renderer.render(
         scene,
@@ -2199,13 +2177,17 @@ function animate(time){
     );
 }
 
+/* =====================================================
+   START
+===================================================== */
+
 applySettings();
 
 animate(0);
 
-/* =========================================================
+/* =====================================================
    RESIZE
-========================================================= */
+===================================================== */
 
 window.addEventListener(
     "resize",
